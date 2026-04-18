@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Македонски — Vocab Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #18181b;
+    --surface2: #222226;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0ede8;
+    --text2: #9e9a94;
+    --text3: #5c5956;
+    --accent: #d4a853;
+    --accent2: #8fb87a;
+    --accent3: #7eb5d4;
+    --red: #c96b5a;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Spectral', Georgia, serif;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(212,168,83,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(126,181,212,0.03) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .app { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+  /* Header */
+  header { padding: 2.5rem 0 2rem; border-bottom: 0.5px solid var(--border); margin-bottom: 2rem; }
+  .logo { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+  h1 { font-size: 2rem; font-weight: 300; color: var(--text); letter-spacing: -0.01em; }
+  h1 span { color: var(--accent); font-style: italic; }
+
+  /* Nav */
+  nav { display: flex; gap: 2px; margin-bottom: 2rem; background: var(--surface); border-radius: var(--radius); padding: 3px; border: 0.5px solid var(--border); }
+  nav button { flex: 1; padding: 8px 4px; border: none; background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
+  nav button.active { background: var(--surface2); color: var(--text); border: 0.5px solid var(--border2); }
+  nav button:hover:not(.active) { color: var(--text); }
+
+  /* Sections */
+  .section { display: none; animation: fadeIn 0.2s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Cards */
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .card-title { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 1rem; }
+
+  /* Stats */
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1rem; }
+  .stat { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+  .stat-label { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
+  .stat-val { font-size: 26px; font-weight: 300; color: var(--text); }
+
+  /* Progress bar */
+  .pbar-wrap { background: var(--surface2); border-radius: 20px; height: 3px; overflow: hidden; margin: 8px 0 4px; }
+  .pbar { height: 100%; border-radius: 20px; background: var(--accent); transition: width 0.4s ease; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
+  .btn:hover { color: var(--text); border-color: rgba(255,255,255,0.25); background: var(--surface2); }
+  .btn-accent { border-color: rgba(212,168,83,0.4); color: var(--accent); }
+  .btn-accent:hover { background: rgba(212,168,83,0.08); border-color: rgba(212,168,83,0.6); }
+  .btn-green { border-color: rgba(143,184,122,0.4); color: var(--accent2); }
+  .btn-green:hover { background: rgba(143,184,122,0.08); }
+  .btn-red { border-color: rgba(201,107,90,0.4); color: var(--red); }
+  .btn-red:hover { background: rgba(201,107,90,0.08); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+
+  /* Flashcard */
+  .fc-outer { perspective: 1000px; margin: 1.5rem 0; }
+  .fc-inner { position: relative; min-height: 220px; transform-style: preserve-3d; transition: transform 0.45s ease; cursor: pointer; }
+  .fc-inner.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; inset: 0; backface-visibility: hidden; background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+  .fc-back { transform: rotateY(180deg); border-color: rgba(212,168,83,0.25); }
+  .fc-word { font-size: 2.2rem; font-weight: 300; letter-spacing: -0.02em; color: var(--text); margin-bottom: 8px; }
+  .fc-hint { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+  .fc-translation { font-size: 1.6rem; font-weight: 300; font-style: italic; color: var(--accent); margin-bottom: 6px; }
+  .fc-cat { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text3); letter-spacing: 0.1em; }
+  .fc-nav { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .fc-counter { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text3); min-width: 60px; text-align: center; }
+
+  /* Category filter chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+  .chip { padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--border); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
+  .chip.active { border-color: rgba(212,168,83,0.5); color: var(--accent); background: rgba(212,168,83,0.06); }
+
+  /* Word list */
+  .word-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); font-size: 14px; }
+  .word-row:last-child { border-bottom: none; }
+  .word-mk { font-size: 15px; font-weight: 400; color: var(--text); min-width: 130px; }
+  .word-en { color: var(--text2); flex: 1; font-style: italic; }
+  .word-check { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
+  .word-check.done { background: rgba(143,184,122,0.15); border-color: rgba(143,184,122,0.5); }
+  .word-del { font-size: 18px; color: var(--text3); cursor: pointer; padding: 0 4px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+  .word-del:hover { color: var(--red); }
+
+  /* Category badge */
+  .cat-badge { font-size: 10px; font-family: 'DM Mono', monospace; padding: 2px 8px; border-radius: 20px; border: 0.5px solid var(--border); color: var(--text3); white-space: nowrap; letter-spacing: 0.06em; }
+
+  /* Daily */
+  .daily-word { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .daily-word:last-child { border-bottom: none; }
+  .daily-word.done .word-mk, .daily-word.done .word-en { opacity: 0.4; text-decoration: line-through; }
+
+  /* Inputs */
+  input[type=text], textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: 'Spectral', serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus, textarea:focus, select:focus { border-color: rgba(212,168,83,0.4); }
+  select option { background: var(--surface2); }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+  ::placeholder { color: var(--text3); }
+
+  /* Log */
+  .log { margin-top: 12px; }
+  .log-line { font-size: 12px; font-family: 'DM Mono', monospace; padding: 3px 0; color: var(--text2); }
+  .log-line.ok { color: var(--accent2); }
+  .log-line.err { color: var(--red); }
+  .log-line.info { color: var(--accent3); }
+
+  /* Spinner */
+  .spinner { width: 14px; height: 14px; border: 1.5px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); font-family: 'DM Mono', monospace; padding: 8px 0; }
+
+  /* Home cat list */
+  .cat-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-name { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); min-width: 140px; letter-spacing: 0.04em; }
+  .cat-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 50px; text-align: right; }
+
+  /* Empty */
+  .empty { font-size: 13px; color: var(--text3); text-align: center; padding: 2.5rem 0; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+
+  /* Add row */
+  .add-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 14px; }
+  @media (max-width: 520px) {
+    .add-row { grid-template-columns: 1fr 1fr; }
+    .stat-grid { grid-template-columns: repeat(2,1fr); }
+    nav button { font-size: 10px; letter-spacing: 0; }
+    .fc-word { font-size: 1.8rem; }
+  }
+
+  /* Drive results */
+  .drive-file { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid var(--border); gap: 12px; }
+  .drive-file:last-child { border-bottom: none; }
+  .drive-name { font-size: 13px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Scrollable word list */
+  .word-list-wrap { max-height: 420px; overflow-y: auto; }
+  .word-list-wrap::-webkit-scrollbar { width: 4px; }
+  .word-list-wrap::-webkit-scrollbar-track { background: transparent; }
+  .word-list-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">Vocab Trainer</div>
+    <h1>Учам <span>македонски</span></h1>
+  </header>
+
+  <nav>
+    <button class="active" onclick="showSection('home')">Home</button>
+    <button onclick="showSection('daily')">Daily 10</button>
+    <button onclick="showSection('flashcards')">Cards</button>
+    <button onclick="showSection('library')">Library</button>
+    <button onclick="showSection('import')">Import</button>
+  </nav>
+
+  <!-- HOME -->
+  <div id="s-home" class="section active">
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-label">words</div><div class="stat-val" id="st-total">0</div></div>
+      <div class="stat"><div class="stat-label">learned</div><div class="stat-val" id="st-learned">0</div></div>
+      <div class="stat"><div class="stat-label">categories</div><div class="stat-val" id="st-cats">0</div></div>
+      <div class="stat"><div class="stat-label">streak</div><div class="stat-val" id="st-streak">1</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Today's progress</div>
+      <div style="font-size:13px;color:var(--text2);font-family:'DM Mono',monospace;" id="daily-prog-txt">0 / 10 reviewed</div>
+      <div class="pbar-wrap"><div class="pbar" id="daily-pbar" style="width:0%"></div></div>
+      <div class="btn-row">
+        <button class="btn btn-accent" onclick="showSection('daily')">Start daily challenge →</button>
+        <button class="btn" onclick="showSection('flashcards')">Free flashcards</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Categories</div>
+      <div id="home-cats"><div class="empty">No categories yet.<br>Import words to begin.</div></div>
+    </div>
+  </div>
+
+  <!-- DAILY -->
+  <div id="s-daily" class="section">
+    <div class="card">
+      <div class="card-title">Daily challenge</div>
+      <div style="font-size:13px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:14px;" id="daily-status"></div>
+      <div id="daily-list"></div>
+      <div id="daily-empty" class="empty" style="display:none">No words yet — import some vocabulary first.</div>
+      <div class="btn-row" id="daily-refresh-row" style="display:none">
+        <button class="btn" onclick="refreshDaily()">New set</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div id="s-flashcards" class="section">
+    <div class="card" style="padding-bottom:0.75rem">
+      <div class="card-title">Filter by category</div>
+      <div class="chips" id="fc-chips"></div>
+    </div>
+    <div class="fc-outer">
+      <div class="fc-inner" id="fc-inner" onclick="flipCard()">
+        <div class="fc-face">
+          <div class="fc-word" id="fc-word">—</div>
+          <div class="fc-hint" id="fc-hint">tap to reveal</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-translation" id="fc-trans"></div>
+          <div class="fc-cat" id="fc-cat-label"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <div style="display:flex;gap:10px;" id="fc-answer-row">
+        <button class="btn btn-red" id="fc-no" onclick="fcAnswer(false)" style="display:none">✗ didn't know</button>
+        <button class="btn btn-green" id="fc-yes" onclick="fcAnswer(true)" style="display:none">✓ knew it</button>
+      </div>
+      <div class="fc-nav">
+        <button class="btn" onclick="fcPrev()">←</button>
+        <span class="fc-counter" id="fc-counter">0 / 0</span>
+        <button class="btn" onclick="fcNext()">→</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIBRARY -->
+  <div id="s-library" class="section">
+    <div class="card">
+      <div class="card-title">Add a word</div>
+      <div class="add-row">
+        <input type="text" id="add-mk" placeholder="Македонски">
+        <input type="text" id="add-en" placeholder="English">
+        <input type="text" id="add-cat" placeholder="Category" list="cat-datalist">
+        <button class="btn btn-accent" onclick="addWord()">Add</button>
+      </div>
+      <datalist id="cat-datalist"></datalist>
+    </div>
+    <div class="card">
+      <div class="card-title">All words</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input type="text" id="lib-search" placeholder="Search..." oninput="renderLibrary()" style="flex:1">
+        <select id="lib-cat" onchange="renderLibrary()" style="width:auto;min-width:130px;">
+          <option value="">All categories</option>
+        </select>
+      </div>
+      <div class="word-list-wrap">
+        <div id="lib-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT -->
+  <div id="s-import" class="section">
+    <div class="card">
+      <div class="card-title">Paste text</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Paste any text with Macedonian words — notes, lists, sentences. Claude will extract, translate, and categorize.</div>
+      <textarea id="import-text" placeholder="куче - dog&#10;мачка - cat&#10;или само текст на македонски..."></textarea>
+      <div class="btn-row">
+        <button class="btn btn-accent" onclick="importText()">Extract with Claude</button>
+        <button class="btn" onclick="loadDemo()">Load demo words</button>
+      </div>
+      <div class="log" id="import-log"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Google Drive</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Search your Drive for documents containing Macedonian vocabulary.</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="drive-q" placeholder="e.g. македонски вокабулар" style="flex:1">
+        <button class="btn btn-accent" onclick="searchDrive()">Search</button>
+      </div>
+      <div id="drive-results" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Manage</div>
+      <div class="btn-row">
+        <button class="btn" onclick="exportWords()">Export JSON</button>
+        <button class="btn btn-red" onclick="clearAll()">Clear all words</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const STORAGE_WORDS = 'mk_words';
+const STORAGE_LEARNED = 'mk_learned';
+const STORAGE_DAILY = 'mk_daily';
+const CAT_COLORS = ['#d4a853','#8fb87a','#7eb5d4','#b87ea0','#c9836b','#7ab8b0','#a0a87e','#c4c4c4'];
+
+let words = [], learned = new Set(), dailyWords = [], dailyDone = new Set();
+let fcDeck = [], fcIdx = 0, fcFlipped = false, fcCatFilter = '';
+
+function today() { return new Date().toISOString().slice(0,10); }
+
+function load() {
+  try { words = JSON.parse(localStorage.getItem(STORAGE_WORDS) || '[]'); } catch(e) { words = []; }
+  try { learned = new Set(JSON.parse(localStorage.getItem(STORAGE_LEARNED) || '[]')); } catch(e) {}
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_DAILY) || '{}');
+    if (d.date === today()) { dailyWords = d.words || []; dailyDone = new Set(d.done || []); }
+  } catch(e) {}
+  refresh();
+}
+
+function save() { localStorage.setItem(STORAGE_WORDS, JSON.stringify(words)); }
+function saveLearned() { localStorage.setItem(STORAGE_LEARNED, JSON.stringify([...learned])); }
+function saveDaily() { localStorage.setItem(STORAGE_DAILY, JSON.stringify({ date: today(), words: dailyWords, done: [...dailyDone] })); }
+
+function refresh() {
+  updateStats(); renderHome(); renderLibrary(); renderDaily();
+  renderFcChips(); buildDeck(); showCard();
+}
+
+function getCategories() { return [...new Set(words.map(w => w.cat).filter(Boolean))]; }
+function catColor(cat) { const i = getCategories().indexOf(cat); return CAT_COLORS[i % CAT_COLORS.length]; }
+
+function updateStats() {
+  document.getElementById('st-total').textContent = words.length;
+  document.getElementById('st-learned').textContent = learned.size;
+  document.getElementById('st-cats').textContent = getCategories().length;
+  const done = dailyDone.size;
+  document.getElementById('daily-prog-txt').textContent = done + ' / ' + Math.min(dailyWords.length || 10, 10) + ' reviewed';
+  document.getElementById('daily-pbar').style.width = Math.round(Math.min(done, 10) / 10 * 100) + '%';
+  const catDL = document.getElementById('cat-datalist');
+  if (catDL) catDL.innerHTML = getCategories().map(c => `<option value="${c}">`).join('');
+}
+
+function renderHome() {
+  const cats = getCategories();
+  const el = document.getElementById('home-cats');
+  if (!cats.length) { el.innerHTML = '<div class="empty">No categories yet.<br>Import words to begin.</div>'; return; }
+  el.innerHTML = cats.map(cat => {
+    const ws = words.filter(w => w.cat === cat);
+    const lc = ws.filter(w => learned.has(w.mk)).length;
+    const pct = ws.length ? Math.round(lc / ws.length * 100) : 0;
+    const col = catColor(cat);
+    return `<div class="cat-row">
+      <div class="cat-name" style="color:${col}">${cat}</div>
+      <div style="flex:1;"><div class="pbar-wrap" style="margin:0;"><div class="pbar" style="width:${pct}%;background:${col};"></div></div></div>
+      <div class="cat-count">${lc}/${ws.length}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDaily() {
+  const el = document.getElementById('daily-list');
+  const empty = document.getElementById('daily-empty');
+  const refreshRow = document.getElementById('daily-refresh-row');
+  if (!words.length) { empty.style.display = 'block'; el.innerHTML = ''; return; }
+  empty.style.display = 'none';
+  if (!dailyWords.length) pickDaily();
+  const status = document.getElementById('daily-status');
+  status.textContent = dailyDone.size + ' / ' + dailyWords.length + ' completed';
+  el.innerHTML = dailyWords.map(mk => {
+    const w = words.find(x => x.mk === mk); if (!w) return '';
+    const done = dailyDone.has(mk);
+    return `<div class="daily-word ${done ? 'done' : ''}">
+      <div class="word-check ${done ? 'done' : ''}" onclick="toggleDaily('${esc(mk)}')">
+        ${done ? '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#8fb87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+      </div>
+      <div class="word-mk">${w.mk}</div>
+      <div class="word-en">${w.en}</div>
+      ${w.cat ? `<div class="cat-badge" style="border-color:${catColor(w.cat)}20;color:${catColor(w.cat)};">${w.cat}</div>` : ''}
+    </div>`;
+  }).join('');
+  refreshRow.style.display = dailyDone.size >= dailyWords.length && dailyWords.length > 0 ? '' : 'none';
+}
+
+function pickDaily() {
+  const pool = words.filter(w => !learned.has(w.mk));
+  const rest = words.filter(w => learned.has(w.mk)).sort(() => Math.random() - 0.5);
+  const combined = [...pool.sort(() => Math.random() - 0.5), ...rest];
+  dailyWords = combined.slice(0, 10).map(w => w.mk);
+  dailyDone = new Set();
+  saveDaily();
+}
+
+function refreshDaily() { dailyWords = []; pickDaily(); renderDaily(); updateStats(); }
+
+function toggleDaily(mk) {
+  if (dailyDone.has(mk)) dailyDone.delete(mk); else dailyDone.add(mk);
+  saveDaily(); renderDaily(); updateStats();
+}
+
+function renderLibrary() {
+  const search = (document.getElementById('lib-search').value || '').toLowerCase();
+  const catF = document.getElementById('lib-cat').value;
+  const sel = document.getElementById('lib-cat');
+  const prev = sel.value;
+  const cats = getCategories();
+  sel.innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option value="${c}" ${c === prev ? 'selected' : ''}>${c}</option>`).join('');
+  if (prev) sel.value = prev;
+  const filtered = words.filter(w => {
+    const ms = !search || w.mk.toLowerCase().includes(search) || w.en.toLowerCase().includes(search);
+    const mc = !catF || w.cat === catF;
+    return ms && mc;
+  });
+  const el = document.getElementById('lib-list');
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No words found.</div>'; return; }
+  el.innerHTML = filtered.slice(0, 80).map(w => {
+    const lrn = learned.has(w.mk);
+    return `<div class="word-row">
+      <div class="word-check ${lrn ? 'done' : ''}" onclick="toggleLearned('${esc(w.mk)}')">
+        ${lrn ? '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#8fb87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+      </div>
+      <div class="word-mk">${w.mk}</div>
+      <div class="word-en">${w.en}</div>
+      ${w.cat ? `<div class="cat-badge" style="border-color:${catColor(w.cat)}30;color:${catColor(w.cat)};">${w.cat}</div>` : ''}
+      <div class="word-del" onclick="deleteWord('${esc(w.mk)}')">×</div>
+    </div>`;
+  }).join('') + (filtered.length > 80 ? `<div style="font-size:11px;color:var(--text3);padding:8px 0;font-family:'DM Mono',monospace;">${filtered.length - 80} more — use search to filter</div>` : '');
+}
+
+function toggleLearned(mk) { if (learned.has(mk)) learned.delete(mk); else learned.add(mk); saveLearned(); renderLibrary(); renderHome(); updateStats(); }
+function deleteWord(mk) { words = words.filter(w => w.mk !== mk); save(); refresh(); }
+
+function addWord() {
+  const mk = document.getElementById('add-mk').value.trim();
+  const en = document.getElementById('add-en').value.trim();
+  const cat = document.getElementById('add-cat').value.trim();
+  if (!mk || !en) return;
+  if (!words.find(w => w.mk === mk)) { words.push({ mk, en, cat }); save(); }
+  document.getElementById('add-mk').value = '';
+  document.getElementById('add-en').value = '';
+  document.getElementById('add-cat').value = '';
+  refresh();
+}
+
+function renderFcChips() {
+  const cats = getCategories();
+  document.getElementById('fc-chips').innerHTML = ['All', ...cats].map(c => `<button class="chip ${(c === 'All' && !fcCatFilter) || c === fcCatFilter ? 'active' : ''}" onclick="setFcCat('${esc(c)}')">${c}</button>`).join('');
+}
+
+function setFcCat(cat) { fcCatFilter = cat === 'All' ? '' : cat; fcIdx = 0; fcFlipped = false; renderFcChips(); buildDeck(); showCard(); }
+
+function buildDeck() {
+  fcDeck = (fcCatFilter ? words.filter(w => w.cat === fcCatFilter) : [...words]).sort(() => Math.random() - 0.5);
+}
+
+function showCard() {
+  const inner = document.getElementById('fc-inner');
+  inner.classList.remove('flipped');
+  fcFlipped = false;
+  document.getElementById('fc-no').style.display = 'none';
+  document.getElementById('fc-yes').style.display = 'none';
+  if (!fcDeck.length) {
+    document.getElementById('fc-word').textContent = '—';
+    document.getElementById('fc-hint').textContent = 'no words yet';
+    document.getElementById('fc-counter').textContent = '0 / 0';
+    return;
+  }
+  const w = fcDeck[fcIdx];
+  document.getElementById('fc-word').textContent = w.mk;
+  document.getElementById('fc-hint').textContent = 'tap to reveal';
+  document.getElementById('fc-trans').textContent = w.en;
+  document.getElementById('fc-cat-label').textContent = w.cat || '';
+  document.getElementById('fc-counter').textContent = (fcIdx + 1) + ' / ' + fcDeck.length;
+}
+
+function flipCard() {
+  if (!fcDeck.length) return;
+  const inner = document.getElementById('fc-inner');
+  if (!fcFlipped) {
+    fcFlipped = true;
+    inner.classList.add('flipped');
+    document.getElementById('fc-hint').textContent = '';
+    document.getElementById('fc-no').style.display = '';
+    document.getElementById('fc-yes').style.display = '';
+  }
+}
+
+function fcAnswer(knew) {
+  if (!fcDeck.length) return;
+  const w = fcDeck[fcIdx];
+  if (knew) { learned.add(w.mk); saveLearned(); updateStats(); renderHome(); }
+  fcNext();
+}
+
+function fcNext() { if (!fcDeck.length) return; fcIdx = (fcIdx + 1) % fcDeck.length; showCard(); }
+function fcPrev() { if (!fcDeck.length) return; fcIdx = (fcIdx - 1 + fcDeck.length) % fcDeck.length; showCard(); }
+
+async function claudeExtract(text) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: 1000,
+      system: 'Extract Macedonian vocabulary. Return ONLY a JSON array, no markdown. Format: [{"mk":"word","en":"translation","cat":"Category"}]. Categories: Days & Time, Months & Seasons, Colors, Adjectives, Nouns, Verbs, Numbers & Ordinals, Prepositions, Frequency, Food, Family, Home, Animals, Emotions, Travel, Grammar. Extract every Macedonian word/phrase with its English meaning.',
+      messages: [{ role: 'user', content: `Extract all Macedonian vocabulary:\n\n${text.slice(0, 3500)}` }]
+    })
+  });
+  const data = await resp.json();
+  const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  const clean = raw.replace(/```json|```/g, '').trim();
+  const s = clean.indexOf('['), e = clean.lastIndexOf(']');
+  if (s >= 0 && e > s) return JSON.parse(clean.slice(s, e + 1));
+  return [];
+}
+
+function logLine(msg, type = '') {
+  document.getElementById('import-log').innerHTML += `<div class="log-line ${type}">${msg}</div>`;
+}
+
+async function importText() {
+  const text = document.getElementById('import-text').value.trim();
+  if (!text) return;
+  document.getElementById('import-log').innerHTML = '<div class="loading"><div class="spinner"></div>Extracting vocabulary...</div>';
+  try {
+    const extracted = await claudeExtract(text);
+    let added = 0;
+    for (const w of extracted) { if (w.mk && w.en && !words.find(x => x.mk === w.mk)) { words.push(w); added++; } }
+    save(); dailyWords = []; saveDaily(); refresh();
+    document.getElementById('import-log').innerHTML = `<div class="log-line ok">✓ Added ${added} new words from ${extracted.length} extracted.</div>`;
+    document.getElementById('import-text').value = '';
+  } catch(e) {
+    document.getElementById('import-log').innerHTML = `<div class="log-line err">Error: ${e.message}</div>`;
+  }
+}
+
+async function searchDrive() {
+  const q = document.getElementById('drive-q').value.trim() || 'македонски';
+  const el = document.getElementById('drive-results');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Searching Drive...</div>';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 1000,
+        system: 'Search Google Drive for files. Return ONLY a JSON array: [{"id":"file_id","name":"filename"}]. No markdown.',
+        messages: [{ role: 'user', content: `Search Google Drive for: "${q}". Return up to 6 files.` }],
+        mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }]
+      })
+    });
+    const data = await resp.json();
+    const txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const toolTxt = (data.content || []).filter(b => b.type === 'mcp_tool_result').map(b => (b.content || []).map(c => c.text || '').join('')).join('');
+    let files = [];
+    try {
+      const combined = txt + toolTxt;
+      const s = combined.indexOf('['), e = combined.lastIndexOf(']');
+      if (s >= 0 && e > s) files = JSON.parse(combined.slice(s, e + 1));
+    } catch(e2) {}
+    if (!files.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-family:\'DM Mono\',monospace;padding:8px 0;">No files found. Try a different search term.</div>'; return; }
+    el.innerHTML = files.map(f => `<div class="drive-file"><div class="drive-name">${f.name || f.id}</div><button class="btn btn-accent" style="font-size:11px;padding:6px 12px;" onclick="extractDriveFile('${esc(f.id)}','${esc(f.name||'')}')">Extract →</button></div>`).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="log-line err">Drive error: ${e.message}</div>`;
+  }
+}
+
+async function extractDriveFile(fileId, name) {
+  const el = document.getElementById('drive-results');
+  el.innerHTML = `<div class="loading"><div class="spinner"></div>Reading "${name}"...</div>`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 4000,
+        system: 'Read a Google Drive document including ALL tabs. Extract all Macedonian vocabulary. Return ONLY a JSON array: [{"mk":"word","en":"translation","cat":"Category"}]. Categories: Days & Time, Months & Seasons, Colors, Adjectives, Nouns, Verbs, Numbers & Ordinals, Prepositions, Frequency, Food, Family, Home, Animals, Emotions, Travel. No markdown.',
+        messages: [{ role: 'user', content: `Read ALL tabs of this Google Drive file (ID: ${fileId}) and extract all Macedonian vocabulary.` }],
+        mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }]
+      })
+    });
+    const data = await resp.json();
+    const allText = (data.content || []).map(b => b.type === 'text' ? b.text : b.type === 'mcp_tool_result' ? (b.content || []).map(c => c.text || '').join('') : '').join('');
+    let extracted = [];
+    try { const s = allText.indexOf('['), e = allText.lastIndexOf(']'); if (s >= 0 && e > s) extracted = JSON.parse(allText.slice(s, e + 1)); } catch(e2) {}
+    if (!extracted.length) { const extracted2 = await claudeExtract(allText); extracted = extracted2; }
+    let added = 0;
+    for (const w of extracted) { if (w.mk && w.en && !words.find(x => x.mk === w.mk)) { words.push(w); added++; } }
+    save(); dailyWords = []; saveDaily(); refresh();
+    el.innerHTML = `<div class="log-line ok">✓ Extracted ${added} new words from "${name}".</div>`;
+  } catch(e) {
+    el.innerHTML = `<div class="log-line err">Error: ${e.message}</div>`;
+  }
+}
+
+function exportWords() {
+  const blob = new Blob([JSON.stringify(words, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'macedonian-vocab.json'; a.click();
+}
+
+function clearAll() {
+  if (!confirm('Delete all words? This cannot be undone.')) return;
+  words = []; learned = new Set(); dailyWords = []; dailyDone = new Set();
+  save(); saveLearned(); saveDaily(); refresh();
+}
+
+function loadDemo() {
+  const demo = [
+    {mk:'куче',en:'dog',cat:'Animals'},{mk:'мачка',en:'cat',cat:'Animals'},{mk:'птица',en:'bird',cat:'Animals'},{mk:'риба',en:'fish',cat:'Animals'},
+    {mk:'леб',en:'bread',cat:'Food'},{mk:'вода',en:'water',cat:'Food'},{mk:'млеко',en:'milk',cat:'Food'},{mk:'јаболко',en:'apple',cat:'Food'},
+    {mk:'мајка',en:'mother',cat:'Family'},{mk:'татко',en:'father',cat:'Family'},{mk:'брат',en:'brother',cat:'Family'},{mk:'сестра',en:'sister',cat:'Family'},
+    {mk:'куќа',en:'house',cat:'Home'},{mk:'врата',en:'door',cat:'Home'},{mk:'маса',en:'table',cat:'Home'},{mk:'стол',en:'chair',cat:'Home'},
+    {mk:'убав',en:'beautiful',cat:'Adjectives'},{mk:'голем',en:'big',cat:'Adjectives'},{mk:'мал',en:'small',cat:'Adjectives'},{mk:'нов',en:'new',cat:'Adjectives'},
+    {mk:'одам',en:'to go',cat:'Verbs'},{mk:'јадам',en:'to eat',cat:'Verbs'},{mk:'читам',en:'to read',cat:'Verbs'},{mk:'зборувам',en:'to speak',cat:'Verbs'},
+    {mk:'понеделник',en:'Monday',cat:'Days & Time'},{mk:'вторник',en:'Tuesday',cat:'Days & Time'},{mk:'среда',en:'Wednesday',cat:'Days & Time'},
+    {mk:'зима',en:'winter',cat:'Months & Seasons'},{mk:'пролет',en:'spring',cat:'Months & Seasons'},{mk:'лето',en:'summer',cat:'Months & Seasons'}
+  ];
+  let added = 0;
+  for (const w of demo) { if (!words.find(x => x.mk === w.mk)) { words.push(w); added++; } }
+  save(); dailyWords = []; saveDaily(); refresh();
+  document.getElementById('import-log').innerHTML = `<div class="log-line ok">✓ Loaded ${added} demo words.</div>`;
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  const idx = ['home','daily','flashcards','library','import'].indexOf(id);
+  document.querySelectorAll('nav button')[idx].classList.add('active');
+  if (id === 'flashcards') { renderFcChips(); buildDeck(); showCard(); }
+  if (id === 'library') renderLibrary();
+  if (id === 'home') { renderHome(); updateStats(); }
+  if (id === 'daily') renderDaily();
+}
+
+function esc(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+load();
+</script>
+</body>
+</html>
