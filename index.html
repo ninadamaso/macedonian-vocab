@@ -7,176 +7,80 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0e0e0f;
-    --surface: #18181b;
-    --surface2: #222226;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #f0ede8;
-    --text2: #9e9a94;
-    --text3: #5c5956;
-    --accent: #d4a853;
-    --accent2: #8fb87a;
-    --accent3: #7eb5d4;
-    --red: #c96b5a;
-    --radius: 10px;
-    --radius-lg: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 16px; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Spectral', Georgia, serif;
-    min-height: 100vh;
-    line-height: 1.6;
-  }
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(212,168,83,0.04) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(126,181,212,0.03) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-  }
-  .app { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; padding: 0 1rem 4rem; }
-
-  /* Header */
-  header { padding: 2.5rem 0 2rem; border-bottom: 0.5px solid var(--border); margin-bottom: 2rem; }
-  .logo { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
-  h1 { font-size: 2rem; font-weight: 300; color: var(--text); letter-spacing: -0.01em; }
-  h1 span { color: var(--accent); font-style: italic; }
-
-  /* Nav */
-  nav { display: flex; gap: 2px; margin-bottom: 2rem; background: var(--surface); border-radius: var(--radius); padding: 3px; border: 0.5px solid var(--border); }
-  nav button { flex: 1; padding: 8px 4px; border: none; background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
-  nav button.active { background: var(--surface2); color: var(--text); border: 0.5px solid var(--border2); }
-  nav button:hover:not(.active) { color: var(--text); }
-
-  /* Sections */
-  .section { display: none; animation: fadeIn 0.2s ease; }
-  .section.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Cards */
-  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
-  .card-title { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 1rem; }
-
-  /* Stats */
-  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1rem; }
-  .stat { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
-  .stat-label { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
-  .stat-val { font-size: 26px; font-weight: 300; color: var(--text); }
-
-  /* Progress bar */
-  .pbar-wrap { background: var(--surface2); border-radius: 20px; height: 3px; overflow: hidden; margin: 8px 0 4px; }
-  .pbar { height: 100%; border-radius: 20px; background: var(--accent); transition: width 0.4s ease; }
-
-  /* Buttons */
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
-  .btn:hover { color: var(--text); border-color: rgba(255,255,255,0.25); background: var(--surface2); }
-  .btn-accent { border-color: rgba(212,168,83,0.4); color: var(--accent); }
-  .btn-accent:hover { background: rgba(212,168,83,0.08); border-color: rgba(212,168,83,0.6); }
-  .btn-green { border-color: rgba(143,184,122,0.4); color: var(--accent2); }
-  .btn-green:hover { background: rgba(143,184,122,0.08); }
-  .btn-red { border-color: rgba(201,107,90,0.4); color: var(--red); }
-  .btn-red:hover { background: rgba(201,107,90,0.08); }
-  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
-
-  /* Flashcard */
-  .fc-outer { perspective: 1000px; margin: 1.5rem 0; }
-  .fc-inner { position: relative; min-height: 220px; transform-style: preserve-3d; transition: transform 0.45s ease; cursor: pointer; }
-  .fc-inner.flipped { transform: rotateY(180deg); }
-  .fc-face { position: absolute; inset: 0; backface-visibility: hidden; background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
-  .fc-back { transform: rotateY(180deg); border-color: rgba(212,168,83,0.25); }
-  .fc-word { font-size: 2.2rem; font-weight: 300; letter-spacing: -0.02em; color: var(--text); margin-bottom: 8px; }
-  .fc-hint { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
-  .fc-translation { font-size: 1.6rem; font-weight: 300; font-style: italic; color: var(--accent); margin-bottom: 6px; }
-  .fc-cat { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text3); letter-spacing: 0.1em; }
-  .fc-nav { display: flex; align-items: center; justify-content: center; gap: 16px; }
-  .fc-counter { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text3); min-width: 60px; text-align: center; }
-
-  /* Category filter chips */
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
-  .chip { padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--border); background: transparent; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
-  .chip.active { border-color: rgba(212,168,83,0.5); color: var(--accent); background: rgba(212,168,83,0.06); }
-
-  /* Word list */
-  .word-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid var(--border); font-size: 14px; }
-  .word-row:last-child { border-bottom: none; }
-  .word-mk { font-size: 15px; font-weight: 400; color: var(--text); min-width: 130px; }
-  .word-en { color: var(--text2); flex: 1; font-style: italic; }
-  .word-check { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
-  .word-check.done { background: rgba(143,184,122,0.15); border-color: rgba(143,184,122,0.5); }
-  .word-del { font-size: 18px; color: var(--text3); cursor: pointer; padding: 0 4px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
-  .word-del:hover { color: var(--red); }
-
-  /* Category badge */
-  .cat-badge { font-size: 10px; font-family: 'DM Mono', monospace; padding: 2px 8px; border-radius: 20px; border: 0.5px solid var(--border); color: var(--text3); white-space: nowrap; letter-spacing: 0.06em; }
-
-  /* Daily */
-  .daily-word { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-  .daily-word:last-child { border-bottom: none; }
-  .daily-word.done .word-mk, .daily-word.done .word-en { opacity: 0.4; text-decoration: line-through; }
-
-  /* Inputs */
-  input[type=text], textarea, select {
-    width: 100%;
-    background: var(--surface2);
-    border: 0.5px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 9px 12px;
-    font-size: 14px;
-    font-family: 'Spectral', serif;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  input[type=text]:focus, textarea:focus, select:focus { border-color: rgba(212,168,83,0.4); }
-  select option { background: var(--surface2); }
-  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
-  ::placeholder { color: var(--text3); }
-
-  /* Log */
-  .log { margin-top: 12px; }
-  .log-line { font-size: 12px; font-family: 'DM Mono', monospace; padding: 3px 0; color: var(--text2); }
-  .log-line.ok { color: var(--accent2); }
-  .log-line.err { color: var(--red); }
-  .log-line.info { color: var(--accent3); }
-
-  /* Spinner */
-  .spinner { width: 14px; height: 14px; border: 1.5px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; flex-shrink: 0; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); font-family: 'DM Mono', monospace; padding: 8px 0; }
-
-  /* Home cat list */
-  .cat-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-  .cat-row:last-child { border-bottom: none; }
-  .cat-name { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); min-width: 140px; letter-spacing: 0.04em; }
-  .cat-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 50px; text-align: right; }
-
-  /* Empty */
-  .empty { font-size: 13px; color: var(--text3); text-align: center; padding: 2.5rem 0; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
-
-  /* Add row */
-  .add-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 14px; }
-  @media (max-width: 520px) {
-    .add-row { grid-template-columns: 1fr 1fr; }
-    .stat-grid { grid-template-columns: repeat(2,1fr); }
-    nav button { font-size: 10px; letter-spacing: 0; }
-    .fc-word { font-size: 1.8rem; }
-  }
-
-  /* Drive results */
-  .drive-file { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 0.5px solid var(--border); gap: 12px; }
-  .drive-file:last-child { border-bottom: none; }
-  .drive-name { font-size: 13px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  /* Scrollable word list */
-  .word-list-wrap { max-height: 420px; overflow-y: auto; }
-  .word-list-wrap::-webkit-scrollbar { width: 4px; }
-  .word-list-wrap::-webkit-scrollbar-track { background: transparent; }
-  .word-list-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+:root{--bg:#0e0e0f;--surface:#18181b;--surface2:#222226;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#f0ede8;--text2:#9e9a94;--text3:#5c5956;--accent:#d4a853;--accent2:#8fb87a;--accent3:#7eb5d4;--red:#c96b5a;--radius:10px;--radius-lg:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Spectral',Georgia,serif;min-height:100vh;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(212,168,83,0.04) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(126,181,212,0.03) 0%,transparent 50%);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:0 1rem 4rem}
+header{padding:2.5rem 0 2rem;border-bottom:0.5px solid var(--border);margin-bottom:2rem}
+.logo{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px}
+h1{font-size:2rem;font-weight:300;color:var(--text);letter-spacing:-0.01em}
+h1 span{color:var(--accent);font-style:italic}
+nav{display:flex;gap:2px;margin-bottom:2rem;background:var(--surface);border-radius:var(--radius);padding:3px;border:0.5px solid var(--border)}
+nav button{flex:1;padding:8px 4px;border:none;background:transparent;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.06em;cursor:pointer;border-radius:8px;transition:all 0.15s}
+nav button.active{background:var(--surface2);color:var(--text);border:0.5px solid var(--border2)}
+nav button:hover:not(.active){color:var(--text)}
+.section{display:none;animation:fadeIn 0.2s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.card-title{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:1rem}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.stat-label{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:4px}
+.stat-val{font-size:26px;font-weight:300;color:var(--text)}
+.pbar-wrap{background:var(--surface2);border-radius:20px;height:3px;overflow:hidden;margin:8px 0 4px}
+.pbar{height:100%;border-radius:20px;background:var(--accent);transition:width 0.4s ease}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius);border:0.5px solid var(--border2);background:transparent;color:var(--text2);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.15s;letter-spacing:0.04em}
+.btn:hover{color:var(--text);border-color:rgba(255,255,255,0.25);background:var(--surface2)}
+.btn-accent{border-color:rgba(212,168,83,0.4);color:var(--accent)}
+.btn-accent:hover{background:rgba(212,168,83,0.08);border-color:rgba(212,168,83,0.6)}
+.btn-green{border-color:rgba(143,184,122,0.4);color:var(--accent2)}
+.btn-green:hover{background:rgba(143,184,122,0.08)}
+.btn-red{border-color:rgba(201,107,90,0.4);color:var(--red)}
+.btn-red:hover{background:rgba(201,107,90,0.08)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.fc-outer{perspective:1000px;margin:1.5rem 0}
+.fc-inner{position:relative;min-height:220px;transform-style:preserve-3d;transition:transform 0.45s ease;cursor:pointer}
+.fc-inner.flipped{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+.fc-back{transform:rotateY(180deg);border-color:rgba(212,168,83,0.25)}
+.fc-word{font-size:2.2rem;font-weight:300;letter-spacing:-0.02em;color:var(--text);margin-bottom:6px}
+.fc-lat{font-size:13px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.05em;margin-bottom:4px}
+.fc-hint{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.08em;margin-top:8px}
+.fc-translation{font-size:1.6rem;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:6px}
+.fc-lat-back{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;margin-bottom:4px}
+.fc-cat{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);letter-spacing:0.1em}
+.fc-nav{display:flex;align-items:center;justify-content:center;gap:16px}
+.fc-counter{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);min-width:60px;text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.chip{padding:4px 12px;border-radius:20px;border:0.5px solid var(--border);background:transparent;color:var(--text2);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.15s;letter-spacing:0.04em}
+.chip.active{border-color:rgba(212,168,83,0.5);color:var(--accent);background:rgba(212,168,83,0.06)}
+.word-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);font-size:14px}
+.word-row:last-child{border-bottom:none}
+.word-mk{font-size:15px;font-weight:400;color:var(--text);min-width:130px}
+.word-lat{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;min-width:100px}
+.word-en{color:var(--text2);flex:1;font-style:italic}
+.word-check{width:20px;height:20px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.15s}
+.word-check.done{background:rgba(143,184,122,0.15);border-color:rgba(143,184,122,0.5)}
+.cat-badge{font-size:10px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;border:0.5px solid var(--border);color:var(--text3);white-space:nowrap;letter-spacing:0.06em}
+.daily-word{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.daily-word:last-child{border-bottom:none}
+.daily-word.done .word-mk,.daily-word.done .word-en,.daily-word.done .word-lat{opacity:0.4;text-decoration:line-through}
+input[type=text],select{width:100%;background:var(--surface2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:9px 12px;font-size:14px;font-family:'Spectral',serif;color:var(--text);outline:none;transition:border-color 0.15s}
+input[type=text]:focus,select:focus{border-color:rgba(212,168,83,0.4)}
+select option{background:var(--surface2)}
+::placeholder{color:var(--text3)}
+.cat-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.cat-row:last-child{border-bottom:none}
+.cat-name{font-family:'DM Mono',monospace;font-size:12px;min-width:160px;letter-spacing:0.04em}
+.cat-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);min-width:50px;text-align:right}
+.empty{font-size:13px;color:var(--text3);text-align:center;padding:2.5rem 0;font-family:'DM Mono',monospace;letter-spacing:0.06em}
+.word-list-wrap{max-height:480px;overflow-y:auto}
+.word-list-wrap::-webkit-scrollbar{width:3px}
+.word-list-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.score-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(212,168,83,0.08);border:0.5px solid rgba(212,168,83,0.25);color:var(--accent);margin-left:8px}
+@media(max-width:520px){.stat-grid{grid-template-columns:repeat(2,1fr)};nav button{font-size:10px;letter-spacing:0};.fc-word{font-size:1.8rem};.word-lat{display:none}}
 </style>
 </head>
 <body>
@@ -185,77 +89,76 @@
     <div class="logo">Vocab Trainer</div>
     <h1>Учам <span>македонски</span></h1>
   </header>
-
   <nav>
-    <button class="active" onclick="showSection('home')">Home</button>
-    <button onclick="showSection('daily')">Daily 10</button>
-    <button onclick="showSection('flashcards')">Cards</button>
-    <button onclick="showSection('library')">Library</button>
-    <button onclick="showSection('import')">Import</button>
+    <button class="active" onclick="show('home')">Home</button>
+    <button onclick="show('daily')">Daily 10</button>
+    <button onclick="show('cards')">Cards</button>
+    <button onclick="show('library')">Library</button>
   </nav>
 
   <!-- HOME -->
   <div id="s-home" class="section active">
     <div class="stat-grid">
-      <div class="stat"><div class="stat-label">words</div><div class="stat-val" id="st-total">0</div></div>
+      <div class="stat"><div class="stat-label">total words</div><div class="stat-val" id="st-total">0</div></div>
       <div class="stat"><div class="stat-label">learned</div><div class="stat-val" id="st-learned">0</div></div>
       <div class="stat"><div class="stat-label">categories</div><div class="stat-val" id="st-cats">0</div></div>
-      <div class="stat"><div class="stat-label">streak</div><div class="stat-val" id="st-streak">1</div></div>
+      <div class="stat"><div class="stat-label">day streak</div><div class="stat-val" id="st-streak">1</div></div>
     </div>
     <div class="card">
       <div class="card-title">Today's progress</div>
       <div style="font-size:13px;color:var(--text2);font-family:'DM Mono',monospace;" id="daily-prog-txt">0 / 10 reviewed</div>
       <div class="pbar-wrap"><div class="pbar" id="daily-pbar" style="width:0%"></div></div>
       <div class="btn-row">
-        <button class="btn btn-accent" onclick="showSection('daily')">Start daily challenge →</button>
-        <button class="btn" onclick="showSection('flashcards')">Free flashcards</button>
+        <button class="btn btn-accent" onclick="show('daily')">Start daily challenge →</button>
+        <button class="btn" onclick="show('cards')">Free flashcards</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">Categories</div>
-      <div id="home-cats"><div class="empty">No categories yet.<br>Import words to begin.</div></div>
+      <div class="card-title">Progress by category</div>
+      <div id="home-cats"></div>
     </div>
   </div>
 
   <!-- DAILY -->
   <div id="s-daily" class="section">
     <div class="card">
-      <div class="card-title">Daily challenge</div>
+      <div class="card-title">Daily challenge — 10 words</div>
       <div style="font-size:13px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:14px;" id="daily-status"></div>
       <div id="daily-list"></div>
-      <div id="daily-empty" class="empty" style="display:none">No words yet — import some vocabulary first.</div>
-      <div class="btn-row" id="daily-refresh-row" style="display:none">
-        <button class="btn" onclick="refreshDaily()">New set</button>
+      <div class="btn-row" id="daily-new-row" style="display:none">
+        <button class="btn btn-accent" onclick="newDaily()">New set →</button>
       </div>
     </div>
   </div>
 
   <!-- FLASHCARDS -->
-  <div id="s-flashcards" class="section">
+  <div id="s-cards" class="section">
     <div class="card" style="padding-bottom:0.75rem">
       <div class="card-title">Filter by category</div>
       <div class="chips" id="fc-chips"></div>
     </div>
     <div class="fc-outer">
-      <div class="fc-inner" id="fc-inner" onclick="flipCard()">
+      <div class="fc-inner" id="fc-inner" onclick="flip()">
         <div class="fc-face">
           <div class="fc-word" id="fc-word">—</div>
+          <div class="fc-lat" id="fc-lat"></div>
           <div class="fc-hint" id="fc-hint">tap to reveal</div>
         </div>
         <div class="fc-face fc-back">
           <div class="fc-translation" id="fc-trans"></div>
-          <div class="fc-cat" id="fc-cat-label"></div>
+          <div class="fc-lat-back" id="fc-lat-back"></div>
+          <div class="fc-cat" id="fc-cat-lbl"></div>
         </div>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <div style="display:flex;gap:10px;" id="fc-answer-row">
-        <button class="btn btn-red" id="fc-no" onclick="fcAnswer(false)" style="display:none">✗ didn't know</button>
-        <button class="btn btn-green" id="fc-yes" onclick="fcAnswer(true)" style="display:none">✓ knew it</button>
+      <div style="display:flex;gap:10px;" id="fc-ans-row">
+        <button class="btn btn-red" id="fc-no" onclick="fcAns(false)" style="display:none">✗ didn't know</button>
+        <button class="btn btn-green" id="fc-yes" onclick="fcAns(true)" style="display:none">✓ knew it</button>
       </div>
       <div class="fc-nav">
         <button class="btn" onclick="fcPrev()">←</button>
-        <span class="fc-counter" id="fc-counter">0 / 0</span>
+        <span class="fc-counter" id="fc-ctr">0 / 0</span>
         <button class="btn" onclick="fcNext()">→</button>
       </div>
     </div>
@@ -264,404 +167,226 @@
   <!-- LIBRARY -->
   <div id="s-library" class="section">
     <div class="card">
-      <div class="card-title">Add a word</div>
-      <div class="add-row">
-        <input type="text" id="add-mk" placeholder="Македонски">
-        <input type="text" id="add-en" placeholder="English">
-        <input type="text" id="add-cat" placeholder="Category" list="cat-datalist">
-        <button class="btn btn-accent" onclick="addWord()">Add</button>
-      </div>
-      <datalist id="cat-datalist"></datalist>
-    </div>
-    <div class="card">
-      <div class="card-title">All words</div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input type="text" id="lib-search" placeholder="Search..." oninput="renderLibrary()" style="flex:1">
-        <select id="lib-cat" onchange="renderLibrary()" style="width:auto;min-width:130px;">
+      <div class="card-title">Browse all 586 words</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <input type="text" id="lib-q" placeholder="Search Macedonian or English..." oninput="renderLib()" style="flex:1;min-width:180px">
+        <select id="lib-cat" onchange="renderLib()" style="width:auto;min-width:160px;">
           <option value="">All categories</option>
         </select>
       </div>
-      <div class="word-list-wrap">
-        <div id="lib-list"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="chip" id="filter-all" onclick="setFilter('all')" style="border-color:rgba(212,168,83,0.5);color:var(--accent)">all</button>
+        <button class="chip" onclick="setFilter('unlearned')">unlearned</button>
+        <button class="chip" onclick="setFilter('learned')">learned</button>
       </div>
-    </div>
-  </div>
-
-  <!-- IMPORT -->
-  <div id="s-import" class="section">
-    <div class="card">
-      <div class="card-title">Paste text</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Paste any text with Macedonian words — notes, lists, sentences. Claude will extract, translate, and categorize.</div>
-      <textarea id="import-text" placeholder="куче - dog&#10;мачка - cat&#10;или само текст на македонски..."></textarea>
-      <div class="btn-row">
-        <button class="btn btn-accent" onclick="importText()">Extract with Claude</button>
-        <button class="btn" onclick="loadDemo()">Load demo words</button>
-      </div>
-      <div class="log" id="import-log"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Google Drive</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Search your Drive for documents containing Macedonian vocabulary.</div>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="drive-q" placeholder="e.g. македонски вокабулар" style="flex:1">
-        <button class="btn btn-accent" onclick="searchDrive()">Search</button>
-      </div>
-      <div id="drive-results" style="margin-top:12px;"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Manage</div>
-      <div class="btn-row">
-        <button class="btn" onclick="exportWords()">Export JSON</button>
-        <button class="btn btn-red" onclick="clearAll()">Clear all words</button>
-      </div>
+      <div class="word-list-wrap"><div id="lib-list"></div></div>
     </div>
   </div>
 </div>
 
 <script>
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-const STORAGE_WORDS = 'mk_words';
-const STORAGE_LEARNED = 'mk_learned';
-const STORAGE_DAILY = 'mk_daily';
-const CAT_COLORS = ['#d4a853','#8fb87a','#7eb5d4','#b87ea0','#c9836b','#7ab8b0','#a0a87e','#c4c4c4'];
+const ALL_WORDS = [{"mk":"Југ","en":"south","cat":"Directions","lat":"jug"},{"mk":"Север","en":"north","cat":"Directions","lat":"sever"},{"mk":"Исток","en":"east","cat":"Directions","lat":"istok"},{"mk":"Запад","en":"west","cat":"Directions","lat":"zapad"},{"mk":"Природа","en":"nature","cat":"Nature & Geography","lat":"priroda"},{"mk":"Ѕвезда ѕvezda","en":"star","cat":"Nature & Geography","lat":""},{"mk":"Небо","en":"sky","cat":"Nature & Geography","lat":"nebo"},{"mk":"Светлина","en":"(noun)","cat":"Nature & Geography","lat":"svetlina light"},{"mk":"Темнина / Мрак","en":"darkness","cat":"Nature & Geography","lat":"temnina / mrak"},{"mk":"Море","en":"sea","cat":"Nature & Geography","lat":"more"},{"mk":"Океан","en":"ocean","cat":"Nature & Geography","lat":"okean"},{"mk":"Езеро","en":"lake","cat":"Nature & Geography","lat":"ezero"},{"mk":"Базен","en":"pool","cat":"Nature & Geography","lat":"bazen"},{"mk":"Брег","en":"coast","cat":"Nature & Geography","lat":"breg shore /"},{"mk":"Остров","en":"island","cat":"Nature & Geography","lat":"ostrov"},{"mk":"Копно","en":"land","cat":"Nature & Geography","lat":"kopno"},{"mk":"Планини","en":"mountains","cat":"Nature & Geography","lat":"planini"},{"mk":"Шума","en":"forest","cat":"Nature & Geography","lat":"sjuma"},{"mk":"Карпа","en":"rock","cat":"Nature & Geography","lat":"karpa large"},{"mk":"Бор","en":"tree","cat":"Nature & Geography","lat":"bor pine"},{"mk":"Цвеќиња","en":"flowers","cat":"Nature & Geography","lat":"cvekjinja"},{"mk":"Дивина","en":"wilderness","cat":"Nature & Geography","lat":"divina"},{"mk":"Ветер","en":"wind","cat":"Nature & Geography","lat":"veter"},{"mk":"Снег","en":"snow","cat":"Nature & Geography","lat":"sneg"},{"mk":"Дожд","en":"rain","cat":"Nature & Geography","lat":"dozjd"},{"mk":"Бура","en":"storm","cat":"Nature & Geography","lat":"bura"},{"mk":"Влага","en":"humidity","cat":"Nature & Geography","lat":"vlaga"},{"mk":"Плажа","en":"beach","cat":"Nature & Geography","lat":"plazja"},{"mk":"Песок","en":"sand","cat":"Nature & Geography","lat":"pesok"},{"mk":"Бран","en":"wave","cat":"Nature & Geography","lat":"bran"},{"mk":"Солена вода","en":"water","cat":"Nature & Geography","lat":"solena voda salt"},{"mk":"Слатка вода","en":"(non-salty)","cat":"Nature & Geography","lat":"slatka voda fresh water"},{"mk":"Сол","en":"salt","cat":"Nature & Geography","lat":"sol"},{"mk":"Време","en":"weather","cat":"Time & Seasons","lat":"vreme time /"},{"mk":"Годишно време / Сезона","en":"season","cat":"Time & Seasons","lat":"godisjno vreme / sezona"},{"mk":"Пролет","en":"spring","cat":"Time & Seasons","lat":"prolet"},{"mk":"Лето","en":"summer","cat":"Time & Seasons","lat":"leto"},{"mk":"Есен","en":"autumn","cat":"Time & Seasons","lat":"esen"},{"mk":"Зима","en":"winter","cat":"Time & Seasons","lat":"zima"},{"mk":"Минато","en":"(noun)","cat":"Time & Seasons","lat":"minato past"},{"mk":"Иднина","en":"(noun)","cat":"Time & Seasons","lat":"idnina future"},{"mk":"Пат","en":"(occurrence)","cat":"Time & Seasons","lat":"pat road / time"},{"mk":"Напладне","en":"noon","cat":"Time & Seasons","lat":"napladne at"},{"mk":"Преку ден","en":"day","cat":"Time & Seasons","lat":"preku den through the"},{"mk":"Град","en":"city","cat":"City & Places","lat":"grad"},{"mk":"Село","en":"village","cat":"City & Places","lat":"selo"},{"mk":"Место","en":"space","cat":"City & Places","lat":"mesto place / location /"},{"mk":"Крај","en":"beside","cat":"City & Places","lat":"kraj end / area /"},{"mk":"Населба","en":"neighborhood","cat":"City & Places","lat":"naselba"},{"mk":"Население","en":"population","cat":"City & Places","lat":"naselenie"},{"mk":"Продавница","en":"shop","cat":"City & Places","lat":"prodavnitsa"},{"mk":"Пазар","en":"market","cat":"City & Places","lat":"pazar"},{"mk":"Кино","en":"cinema","cat":"City & Places","lat":"kino"},{"mk":"Театар","en":"theatre","cat":"City & Places","lat":"teatar"},{"mk":"Мост","en":"bridge","cat":"City & Places","lat":"most"},{"mk":"Пристаниште","en":"dock","cat":"City & Places","lat":"pristanisjte"},{"mk":"Болница","en":"hospital","cat":"City & Places","lat":"bolnica"},{"mk":"Теретана","en":"gym","cat":"City & Places","lat":"teretana"},{"mk":"Фризерски салон","en":"salon","cat":"City & Places","lat":"frizerski salon hair"},{"mk":"Казино","en":"casino","cat":"City & Places","lat":"kazino"},{"mk":"Факултет","en":"university","cat":"City & Places","lat":"fakultet"},{"mk":"Гимназија","en":"school","cat":"City & Places","lat":"gimnazija high"},{"mk":"Училиште","en":"school","cat":"City & Places","lat":"ucjilisjte"},{"mk":"Гледалиште","en":"(old word)","cat":"City & Places","lat":"gledalishte cinema / theatre"},{"mk":"Шеталиште","en":"walking","cat":"City & Places","lat":"sjetalishte place for"},{"mk":"Кафич","en":"café / coffee shop","cat":"City & Places","lat":"kaficj"},{"mk":"Затвор","en":"prison","cat":"City & Places","lat":"zatvor"},{"mk":"Куќа","en":"house","cat":"Home & Furniture","lat":"kukja"},{"mk":"Стан","en":"apartment","cat":"Home & Furniture","lat":"stan"},{"mk":"Зграда","en":"building","cat":"Home & Furniture","lat":"zgrada apartment"},{"mk":"Соба","en":"room","cat":"Home & Furniture","lat":"soba"},{"mk":"Кујна","en":"kitchen","cat":"Home & Furniture","lat":"kujna"},{"mk":"Купатило","en":"bathroom","cat":"Home & Furniture","lat":"kupatilo"},{"mk":"Двор","en":"yard","cat":"Home & Furniture","lat":"dvor backyard /"},{"mk":"Полица","en":"shelf","cat":"Home & Furniture","lat":"polica"},{"mk":"Плакар","en":"closet","cat":"Home & Furniture","lat":"plakar wardrobe /"},{"mk":"Кауч","en":"couch","cat":"Home & Furniture","lat":"kauch"},{"mk":"Кревет","en":"bed","cat":"Home & Furniture","lat":"krevet"},{"mk":"Маса","en":"table","cat":"Home & Furniture","lat":"masa"},{"mk":"Столица","en":"chair","cat":"Home & Furniture","lat":"stolica"},{"mk":"Лежалка","en":"chair","cat":"Home & Furniture","lat":"lezjalka beach"},{"mk":"Влез","en":"entrance","cat":"Home & Furniture","lat":"vlez"},{"mk":"Излез","en":"exit","cat":"Home & Furniture","lat":"izlez"},{"mk":"Човек","en":"person","cat":"People","lat":"cjovek"},{"mk":"Луѓе","en":"people","cat":"People","lat":"lugje"},{"mk":"Маж","en":"husband","cat":"People","lat":"mazj man /"},{"mk":"Жена","en":"wife","cat":"People","lat":"zjena woman /"},{"mk":"Дете","en":"child","cat":"People","lat":"dete"},{"mk":"Момче / Декjo","en":"man","cat":"People","lat":"momcje / decjko boyfriend / young"},{"mk":"Рибар","en":"fisherman","cat":"People","lat":"ribar"},{"mk":"Полицаец","en":"policeman","cat":"People","lat":"policaec"},{"mk":"Полицајка","en":"policewoman","cat":"People","lat":"policajka"},{"mk":"Работник","en":"employee","cat":"People","lat":"rabotnik worker /"},{"mk":"Лекар","en":"doctor","cat":"People","lat":"lekar"},{"mk":"Сосед","en":"neighbor","cat":"People","lat":"sosed male"},{"mk":"Соседка","en":"neighbor","cat":"People","lat":"sosetka female"},{"mk":"Близнаци","en":"(mixed/male)","cat":"People","lat":"bliznaci twins"},{"mk":"Близначки","en":"(female)","cat":"People","lat":"bliznacjki twins"},{"mk":"Заб","en":"tooth","cat":"Body & Health","lat":"zab"},{"mk":"Грло","en":"throat","cat":"Body & Health","lat":"grlo"},{"mk":"Стомак","en":"stomach","cat":"Body & Health","lat":"stomak"},{"mk":"Коса","en":"hair","cat":"Body & Health","lat":"kosa"},{"mk":"Образ","en":"cheek","cat":"Body & Health","lat":"obraz"},{"mk":"Срце","en":"heart","cat":"Body & Health","lat":"srce"},{"mk":"Болка","en":"pain","cat":"Body & Health","lat":"bolka"},{"mk":"Грип / Настинка","en":"flu","cat":"Body & Health","lat":"grip / nastinka cold /"},{"mk":"Апче","en":"tablet","cat":"Body & Health","lat":"apche pill /"},{"mk":"Труење","en":"poisoning","cat":"Body & Health","lat":"truenje"},{"mk":"Уверение","en":"doctor's certificate","cat":"Body & Health","lat":"uvenerie"},{"mk":"Масажа","en":"massage","cat":"Body & Health","lat":"masazja"},{"mk":"Облека","en":"clothing","cat":"Clothing","lat":"obleka"},{"mk":"Блуза","en":"blouse","cat":"Clothing","lat":"bluza"},{"mk":"Џемпер","en":"sweater","cat":"Clothing","lat":"djemper"},{"mk":"Капут","en":"coat","cat":"Clothing","lat":"kaput"},{"mk":"Фустан","en":"dress","cat":"Clothing","lat":"fustan"},{"mk":"Купаќи","en":"swimsuit","cat":"Clothing","lat":"kupacji"},{"mk":"Патики","en":"sneakers","cat":"Clothing","lat":"patiki"},{"mk":"Папучи","en":"slippers","cat":"Clothing","lat":"papucji"},{"mk":"Торта","en":"cake","cat":"Food & Cooking","lat":"torta"},{"mk":"Рецепт","en":"recipe","cat":"Food & Cooking","lat":"recept"},{"mk":"Тесто","en":"dough","cat":"Food & Cooking","lat":"testo"},{"mk":"Праз","en":"leek","cat":"Food & Cooking","lat":"praz"},{"mk":"Брашно","en":"flour","cat":"Food & Cooking","lat":"brasjno"},{"mk":"Квасец","en":"yeast","cat":"Food & Cooking","lat":"kvasec"},{"mk":"Портокал","en":"(fruit)","cat":"Food & Cooking","lat":"portokal orange"},{"mk":"Гранула","en":"granola","cat":"Food & Cooking","lat":"granula"},{"mk":"Скир","en":"(type of yogurt)","cat":"Food & Cooking","lat":"skir skyr"},{"mk":"Разговор","en":"conversation","cat":"Language & Communication","lat":"razgovor"},{"mk":"Збор","en":"word","cat":"Language & Communication","lat":"zbor"},{"mk":"Прашање prasjanje question (pl: прашања","en":"— exception)","cat":"Language & Communication","lat":""},{"mk":"Одговор","en":"answer","cat":"Language & Communication","lat":"odgovor"},{"mk":"Заклучок","en":"conclusion","cat":"Language & Communication","lat":"zaklucjok"},{"mk":"Клуч","en":"key","cat":"Language & Communication","lat":"klucj"},{"mk":"Снимка","en":"recording","cat":"Language & Communication","lat":"snimka"},{"mk":"Камера","en":"camera","cat":"Language & Communication","lat":"kamera"},{"mk":"Уметност","en":"art","cat":"Language & Communication","lat":"umetnost"},{"mk":"Настан","en":"event","cat":"Language & Communication","lat":"nastan"},{"mk":"Слобода","en":"freedom","cat":"Abstract Nouns","lat":"sloboda"},{"mk":"Мир","en":"calmness","cat":"Abstract Nouns","lat":"mir peace /"},{"mk":"Помош","en":"(noun)","cat":"Abstract Nouns","lat":"pomosj help"},{"mk":"Шанса","en":"chance","cat":"Abstract Nouns","lat":"sjansa"},{"mk":"Способност","en":"ability","cat":"Abstract Nouns","lat":"sposobnost"},{"mk":"Суштество","en":"creature","cat":"Abstract Nouns","lat":"susjtestvo"},{"mk":"Вистина","en":"truth","cat":"Abstract Nouns","lat":"vistina"},{"mk":"Лага","en":"lie","cat":"Abstract Nouns","lat":"laga"},{"mk":"Стратегија","en":"strategy","cat":"Abstract Nouns","lat":"strategija"},{"mk":"Дел","en":"part","cat":"Abstract Nouns","lat":"del"},{"mk":"Терет","en":"load","cat":"Abstract Nouns","lat":"teret"},{"mk":"Внатрешност","en":"interior","cat":"Abstract Nouns","lat":"vnatresjnost"},{"mk":"Надворешност","en":"exterior","cat":"Abstract Nouns","lat":"nadvoresjnost"},{"mk":"Закон","en":"law","cat":"Society & Law","lat":"zakon"},{"mk":"Забрана","en":"interdiction","cat":"Society & Law","lat":"zabrana prohibition /"},{"mk":"Казна","en":"punishment","cat":"Society & Law","lat":"kazna"},{"mk":"Доказ","en":"proof","cat":"Society & Law","lat":"dokaz"},{"mk":"Дозвола","en":"permission","cat":"Society & Law","lat":"dozvola"},{"mk":"Право","en":"law","cat":"Society & Law","lat":"pravo right /"},{"mk":"Еднаквост","en":"equality","cat":"Society & Law","lat":"ednakvost"},{"mk":"Образование","en":"education","cat":"Society & Law","lat":"obrazovanie"},{"mk":"Приоритет","en":"priority","cat":"Society & Law","lat":"prioritet"},{"mk":"Кариера","en":"career","cat":"Society & Law","lat":"kariera"},{"mk":"Врска","en":"relationship","cat":"Society & Law","lat":"vrska"},{"mk":"Брак","en":"marriage","cat":"Society & Law","lat":"brak"},{"mk":"Промена","en":"change","cat":"Society & Law","lat":"promena"},{"mk":"Пријателство","en":"friendship","cat":"Society & Law","lat":"prijatelstvo"},{"mk":"Свадба / Венчавка","en":"wedding","cat":"Celebrations & Events","lat":"svadba / vencjavka"},{"mk":"Венчаница","en":"dress","cat":"Celebrations & Events","lat":"vencjanica wedding"},{"mk":"Покана","en":"invitation","cat":"Celebrations & Events","lat":"pokana"},{"mk":"Погреб","en":"funeral","cat":"Celebrations & Events","lat":"pogreb"},{"mk":"Роденден","en":"birthday","cat":"Celebrations & Events","lat":"rodenden"},{"mk":"Божиќ","en":"Christmas","cat":"Celebrations & Events","lat":"bozjikj"},{"mk":"Велигден","en":"Easter","cat":"Celebrations & Events","lat":"veligden"},{"mk":"Нова година","en":"New Year","cat":"Celebrations & Events","lat":"nova godina"},{"mk":"Емоција","en":"emotion","cat":"Emotions & Feelings","lat":"emocija"},{"mk":"Чувство","en":"feeling","cat":"Emotions & Feelings","lat":"cjuvstvo"},{"mk":"Среќа","en":"happiness","cat":"Emotions & Feelings","lat":"srekja"},{"mk":"Тага","en":"sadness","cat":"Emotions & Feelings","lat":"taga"},{"mk":"Гнев / Бес","en":"anger","cat":"Emotions & Feelings","lat":"gnev / bes"},{"mk":"Возбуда","en":"excitement","cat":"Emotions & Feelings","lat":"vozbuda"},{"mk":"Фрустрација","en":"frustration","cat":"Emotions & Feelings","lat":"frustracija"},{"mk":"Смиреност","en":"peacefulness","cat":"Emotions & Feelings","lat":"smirenost calmness /"},{"mk":"Задоволство","en":"fulfillment","cat":"Emotions & Feelings","lat":"zadovolstvo enjoyment /"},{"mk":"Умор","en":"tiredness","cat":"Emotions & Feelings","lat":"umor"},{"mk":"Стрес","en":"stress","cat":"Emotions & Feelings","lat":"stres"},{"mk":"Страв","en":"fear","cat":"Emotions & Feelings","lat":"strav"},{"mk":"Страшило","en":"scarecrow","cat":"Emotions & Feelings","lat":"strasjilo"},{"mk":"Љубопитност","en":"curiosity","cat":"Emotions & Feelings","lat":"ljubopitnost"},{"mk":"Радост","en":"joy","cat":"Emotions & Feelings","lat":"radost"},{"mk":"Старост","en":"age","cat":"Emotions & Feelings","lat":"starost old"},{"mk":"Младост","en":"youth","cat":"Emotions & Feelings","lat":"mladost"},{"mk":"Гордост","en":"pride","cat":"Emotions & Feelings","lat":"gordost"},{"mk":"Животни","en":"animals","cat":"Animals","lat":"zjivotni"},{"mk":"Риба","en":"fish","cat":"Animals","lat":"riba"},{"mk":"Мачка","en":"cat","cat":"Animals","lat":"macjka"},{"mk":"Свиња","en":"boar","cat":"Animals","lat":"svinja pig /"},{"mk":"Срна","en":"(doe)","cat":"Animals","lat":"srna deer"},{"mk":"Магаре","en":"donkey","cat":"Animals","lat":"magare"},{"mk":"Мечка","en":"bear","cat":"Animals","lat":"mecjka"},{"mk":"Слон","en":"elephant","cat":"Animals","lat":"slon"},{"mk":"Птица","en":"bird","cat":"Animals","lat":"ptica"},{"mk":"Камелеон","en":"chameleon","cat":"Animals","lat":"kameleon"},{"mk":"Пепел","en":"ash","cat":"Miscellaneous","lat":"pepel"},{"mk":"Пепелник / Пепељара","en":"ashtray","cat":"Miscellaneous","lat":"pepelnik / pepeljara"},{"mk":"Состанок","en":"meeting","cat":"Miscellaneous","lat":"sostanok"},{"mk":"Посета","en":"visit","cat":"Miscellaneous","lat":"poseta"},{"mk":"Риболов","en":"fishing","cat":"Miscellaneous","lat":"ribolov"},{"mk":"Лов","en":"hunting","cat":"Miscellaneous","lat":"lov"},{"mk":"Вкус","en":"taste","cat":"Miscellaneous","lat":"vkus"},{"mk":"Мрежа","en":"network","cat":"Miscellaneous","lat":"mrezja web /"},{"mk":"Социјални мрежи","en":"media","cat":"Miscellaneous","lat":"socijalni mrezji social"},{"mk":"Топка","en":"ball","cat":"Miscellaneous","lat":"topka"},{"mk":"Вештерка","en":"witch","cat":"Miscellaneous","lat":"vesjterka"},{"mk":"Бегство","en":"escape","cat":"Miscellaneous","lat":"begstvo"},{"mk":"Награда","en":"prize","cat":"Miscellaneous","lat":"nagrada award /"},{"mk":"Свеќа","en":"candle","cat":"Miscellaneous","lat":"svekja"},{"mk":"Гужва","en":"crowd","cat":"Miscellaneous","lat":"guzjva"},{"mk":"Брод","en":"ship","cat":"Miscellaneous","lat":"brod boat /"},{"mk":"Пијачка","en":"outing","cat":"Miscellaneous","lat":"pijacjka bar night / drinks"},{"mk":"Апче","en":"tablet","cat":"Miscellaneous","lat":"apche pill /"},{"mk":"Таига / Тапа","en":"(slang: stupid person)","cat":"Miscellaneous","lat":"tapa cork"},{"mk":"Скапоцени камења","en":"stones","cat":"Miscellaneous","lat":"skapotseni kamenja precious"},{"mk":"Аквамарин","en":"aquamarine","cat":"Miscellaneous","lat":"akvamarin"},{"mk":"Хороскопски знак","en":"sign","cat":"Miscellaneous","lat":"horoskopski znak horoscope"},{"mk":"Подзнак","en":"ascendant","cat":"Miscellaneous","lat":"podznak"},{"mk":"Шукур","en":"God (Turkish origin)","cat":"Miscellaneous","lat":"sjukjur thank"},{"mk":"Овен","en":"Aries","cat":"Horoscope Signs","lat":"oven"},{"mk":"Бик","en":"Taurus","cat":"Horoscope Signs","lat":"bik"},{"mk":"Близнаци","en":"Gemini","cat":"Horoscope Signs","lat":"bliznaci"},{"mk":"Рак","en":"Cancer","cat":"Horoscope Signs","lat":"rak"},{"mk":"Лав","en":"Leo","cat":"Horoscope Signs","lat":"lav"},{"mk":"Девица","en":"Virgo","cat":"Horoscope Signs","lat":"devica"},{"mk":"Вага","en":"Libra","cat":"Horoscope Signs","lat":"vaga"},{"mk":"Скорпија","en":"Scorpio","cat":"Horoscope Signs","lat":"skorpija"},{"mk":"Стрелец","en":"Sagittarius","cat":"Horoscope Signs","lat":"strelec"},{"mk":"Јарец","en":"Capricorn","cat":"Horoscope Signs","lat":"jarec"},{"mk":"Водолија","en":"Aquarius","cat":"Horoscope Signs","lat":"vodolija"},{"mk":"Риба","en":"Pisces","cat":"Horoscope Signs","lat":"riba"},{"mk":"Сака","en":"love","cat":"Verbs","lat":"saka to want / to"},{"mk":"Знае","en":"know","cat":"Verbs","lat":"znae to"},{"mk":"Мисли","en":"think","cat":"Verbs","lat":"misli to"},{"mk":"Зборува / Разговара","en":"talk","cat":"Verbs","lat":"zboruva / razgovara to speak / to"},{"mk":"Разбира","en":"understand","cat":"Verbs","lat":"razbira to"},{"mk":"Живее","en":"live","cat":"Verbs","lat":"zjivee to"},{"mk":"Оди","en":"walk","cat":"Verbs","lat":"odi to go /"},{"mk":"Доаѓа","en":"(imperfect)","cat":"Verbs","lat":"doagja to come"},{"mk":"Дојде","en":"(perfect)","cat":"Verbs","lat":"dojde to come"},{"mk":"Стигнува","en":"(imperfect)","cat":"Verbs","lat":"stignuva to arrive"},{"mk":"Стигна","en":"(perfect)","cat":"Verbs","lat":"stigna to arrive"},{"mk":"Заминува","en":"leave","cat":"Verbs","lat":"zaminuva to"},{"mk":"Зема","en":"take","cat":"Verbs","lat":"zema to"},{"mk":"Дава","en":"(imperfect)","cat":"Verbs","lat":"dava to give"},{"mk":"Даде","en":"(perfect)","cat":"Verbs","lat":"dade to give"},{"mk":"Носи","en":"wear","cat":"Verbs","lat":"nosi to carry / bring /"},{"mk":"Прави","en":"make","cat":"Verbs","lat":"pravi to do /"},{"mk":"Завршува","en":"complete","cat":"Verbs","lat":"zavrsjuva to finish /"},{"mk":"Подготвува","en":"prepare","cat":"Verbs","lat":"podgotvuva to"},{"mk":"Почнува","en":"(imperfect)","cat":"Verbs","lat":"pocjnuva to start"},{"mk":"Почна","en":"(perfect)","cat":"Verbs","lat":"pocjna to start"},{"mk":"Стануva","en":"(imperfect)","cat":"Verbs","lat":"stanuva to get up / become"},{"mk":"Стана","en":"(perfect)","cat":"Verbs","lat":"stana to stand up / become"},{"mk":"Остануva","en":"(imperfect)","cat":"Verbs","lat":"ostanuva to stay"},{"mk":"Остана","en":"(perfect)","cat":"Verbs","lat":"ostana to stay"},{"mk":"Седи","en":"(imperfect)","cat":"Verbs","lat":"sedi to sit"},{"mk":"Седна","en":"(perfect)","cat":"Verbs","lat":"sedna to sit down"},{"mk":"Легнува","en":"bed","cat":"Verbs","lat":"legnuva to lie down / go to"},{"mk":"Лежи","en":"recline","cat":"Verbs","lat":"lezji to lie /"},{"mk":"Се буди","en":"up","cat":"Verbs","lat":"se budi to wake"},{"mk":"Дорачкува","en":"breakfast","cat":"Verbs","lat":"dorucjkuva to have"},{"mk":"Шета","en":"wander","cat":"Verbs","lat":"sjeta to walk around /"},{"mk":"Патува","en":"travel","cat":"Verbs","lat":"patuva to"},{"mk":"Вози","en":"drive","cat":"Verbs","lat":"vozi to"},{"mk":"Пливa","en":"swim","cat":"Verbs","lat":"pliva to"},{"mk":"Скија","en":"ski","cat":"Verbs","lat":"skija to"},{"mk":"Нурка","en":"dive","cat":"Verbs","lat":"nurka to"},{"mk":"Сурфа","en":"surf","cat":"Verbs","lat":"surfa to"},{"mk":"Спортува","en":"sports","cat":"Verbs","lat":"sportuva to do"},{"mk":"Тренира","en":"practice","cat":"Verbs","lat":"trenira to train /"},{"mk":"Се дружи","en":"(with someone)","cat":"Verbs","lat":"se druzji to hang out"},{"mk":"Се сончи","en":"sunbathe","cat":"Verbs","lat":"se soncja to"},{"mk":"Изгледа на / Личи на","en":"like","cat":"Verbs","lat":"izgleda na / licji na to look"},{"mk":"Кажува","en":"(imperfect)","cat":"Verbs","lat":"kazjuva to say / tell"},{"mk":"Кажа","en":"(perfect)","cat":"Verbs","lat":"kazja to say / tell"},{"mk":"Прашува","en":"ask","cat":"Verbs","lat":"prasjuva to"},{"mk":"Одговара","en":"answer","cat":"Verbs","lat":"odgovara to"},{"mk":"Разбира","en":"understand","cat":"Verbs","lat":"razbira to"},{"mk":"Пишува","en":"(imperfect)","cat":"Verbs","lat":"pisjuva to write"},{"mk":"Пишa","en":"(perfect)","cat":"Verbs","lat":"pisja to write"},{"mk":"Чита","en":"read","cat":"Verbs","lat":"cjita to"},{"mk":"Слуша","en":"listen","cat":"Verbs","lat":"slusja to"},{"mk":"Снима","en":"film","cat":"Verbs","lat":"snima to record /"},{"mk":"Свири","en":"instrument","cat":"Verbs","lat":"sviri to play music /"},{"mk":"Пее","en":"sing","cat":"Verbs","lat":"pee to"},{"mk":"Препорачува / Предлага","en":"(imperf. /","cat":"Verbs","lat":"preporacjuva / predlaga to recommend"},{"mk":"Предложува","en":"propose","cat":"Verbs","lat":"predlozjuva to suggest /"},{"mk":"Преведува","en":"translate","cat":"Verbs","lat":"preveduva to"},{"mk":"Превeduva = превeдe","en":"(imperf. / perf.)","cat":"Verbs","lat":"preveduva / prevede to translate"},{"mk":"Се согласува","en":"agree","cat":"Verbs","lat":"se soglasuva to"},{"mk":"Се лути","en":"angry","cat":"Verbs","lat":"se luti to be"},{"mk":"Моли","en":"pray","cat":"Verbs","lat":"moli to beg / to"},{"mk":"Плаче","en":"cry","cat":"Verbs","lat":"placije to"},{"mk":"Се смирува","en":"down","cat":"Verbs","lat":"se smiruvam to calm"},{"mk":"Се чувствува","en":"feel","cat":"Verbs","lat":"se cjuvstvuva to"},{"mk":"Се среќава","en":"(someone you know)","cat":"Verbs","lat":"se srekjava to meet"},{"mk":"Се запознава","en":"(for the first time)","cat":"Verbs","lat":"se zapoznava to meet"},{"mk":"Се зaljubуva","en":"love","cat":"Verbs","lat":"se zaljubuva to fall in"},{"mk":"Нервира","en":"nervous","cat":"Verbs","lat":"nervira to irritate / make"},{"mk":"Пали","en":"on","cat":"Verbs","lat":"pali to enflame / turn"},{"mk":"Грижи","en":"(about someone)","cat":"Verbs","lat":"grizji to care"},{"mk":"Озборува / Оговара","en":"gossip","cat":"Verbs","lat":"ozboruva / ogovara to"},{"mk":"Ужива","en":"enjoy","cat":"Verbs","lat":"uzjiva to"},{"mk":"Се допаѓа","en":"(used with indirect object)","cat":"Verbs","lat":"se dopagja to like"},{"mk":"Сака","en":"want","cat":"Verbs","lat":"saka to like / love /"},{"mk":"Купува","en":"buy","cat":"Verbs","lat":"kupuva to"},{"mk":"Продава","en":"sell","cat":"Verbs","lat":"prodava to"},{"mk":"Предава","en":"over","cat":"Verbs","lat":"predava to teach / hand"},{"mk":"Нуди","en":"offer","cat":"Verbs","lat":"nudi to"},{"mk":"Чека","en":"wait","cat":"Verbs","lat":"cjeka to"},{"mk":"Поправува","en":"fix","cat":"Verbs","lat":"popravuva to"},{"mk":"Излегува","en":"exit","cat":"Verbs","lat":"izleguva to go out /"},{"mk":"Влегува","en":"enter","cat":"Verbs","lat":"vleguva to"},{"mk":"Фаќа","en":"grab","cat":"Verbs","lat":"fakja to catch /"},{"mk":"Губи","en":"lose","cat":"Verbs","lat":"gubi to"},{"mk":"Менува","en":"change","cat":"Verbs","lat":"menuva to"},{"mk":"Потсетува","en":"remind","cat":"Verbs","lat":"potsetuva to"},{"mk":"Бара","en":"search","cat":"Verbs","lat":"bara to look for /"},{"mk":"Наоѓа","en":"(imperfect)","cat":"Verbs","lat":"naogja to find / be located"},{"mk":"Најде","en":"(perfect)","cat":"Verbs","lat":"najde to find"},{"mk":"Крие","en":"(imperfect)","cat":"Verbs","lat":"krie to hide"},{"mk":"Скрие","en":"(perfect)","cat":"Verbs","lat":"skrie to hide"},{"mk":"Открие","en":"discover","cat":"Verbs","lat":"otkrie to"},{"mk":"Фотографира","en":"photograph","cat":"Verbs","lat":"fotografira to"},{"mk":"Заробува","en":"trap","cat":"Verbs","lat":"zarobuva to"},{"mk":"Убие","en":"kill","cat":"Verbs","lat":"ubie to"},{"mk":"Маva","en":"punch","cat":"Verbs","lat":"mava to"},{"mk":"Труе","en":"poison","cat":"Verbs","lat":"true to"},{"mk":"Умре","en":"die","cat":"Verbs","lat":"umre to"},{"mk":"Нарушува","en":"disrupt","cat":"Verbs","lat":"narusjuva to disturb /"},{"mk":"Казнува","en":"punish","cat":"Verbs","lat":"kaznuva to"},{"mk":"Забранува","en":"forbid","cat":"Verbs","lat":"zabranuva to"},{"mk":"Смее да","en":"to","cat":"Verbs","lat":"smee da to be allowed"},{"mk":"Вреди","en":"worth","cat":"Verbs","lat":"vredi to be"},{"mk":"Зависи","en":"depends","cat":"Verbs","lat":"zavisi it"},{"mk":"Се случува","en":"happen","cat":"Verbs","lat":"se slucjuva to"},{"mk":"Сфаќа","en":"realise","cat":"Verbs","lat":"sfakja to"},{"mk":"Привлекува","en":"attract","cat":"Verbs","lat":"privlekuva to"},{"mk":"Се фокусира","en":"focus","cat":"Verbs","lat":"se fokusira to"},{"mk":"Се насели","en":"somewhere","cat":"Verbs","lat":"se naseli to settle"},{"mk":"Се сели","en":"(to a new place)","cat":"Verbs","lat":"se seli to move"},{"mk":"Дава откаж","en":"(a job)","cat":"Verbs","lat":"dava otkaz to quit"},{"mk":"Добива откаж","en":"fired","cat":"Verbs","lat":"dobiva otkaz to get"},{"mk":"Ставa","en":"put","cat":"Verbs","lat":"stava to"},{"mk":"Помага","en":"help","cat":"Verbs","lat":"pomaga to"},{"mk":"Повтори","en":"repeat","cat":"Verbs","lat":"povtori to"},{"mk":"Чува","en":"keep","cat":"Verbs","lat":"cjuva to guard /"},{"mk":"Пуши","en":"smoke","cat":"Verbs","lat":"pusji to"},{"mk":"Пие","en":"drink","cat":"Verbs","lat":"pie to"},{"mk":"Јаде","en":"eat","cat":"Verbs","lat":"jade to"},{"mk":"Спие","en":"sleep","cat":"Verbs","lat":"spie to"},{"mk":"Плете","en":"knit","cat":"Verbs","lat":"plete to"},{"mk":"Игнорира","en":"ignore","cat":"Verbs","lat":"ignorira to"},{"mk":"Рапува","en":"rap","cat":"Verbs","lat":"rapuva to"},{"mk":"Се венча","en":"married","cat":"Verbs","lat":"se vencja to get"},{"mk":"Се омажи","en":"(said of a woman)","cat":"Verbs","lat":"se omazi to marry a man"},{"mk":"Се ожени","en":"(said of a man)","cat":"Verbs","lat":"se ozjeni to marry a woman"},{"mk":"Образоваат","en":"educate","cat":"Verbs","lat":"obrazovaat to"},{"mk":"Значи","en":"mean","cat":"Verbs","lat":"znacji to"},{"mk":"Прифати","en":"accept","cat":"Verbs","lat":"prifati to"},{"mk":"Докажува","en":"prove","cat":"Verbs","lat":"dokazjuva to"},{"mk":"Откажува","en":"cancel","cat":"Verbs","lat":"otkazjuva to"},{"mk":"Покажува","en":"show","cat":"Verbs","lat":"pokazjuva to"},{"mk":"Закажува","en":"schedule","cat":"Verbs","lat":"zakazjuva to"},{"mk":"Заклучи","en":"conclude","cat":"Verbs","lat":"zaklucji to"},{"mk":"Посетува","en":"(imperfect)","cat":"Verbs","lat":"posevuva to visit"},{"mk":"Посети","en":"(perfect)","cat":"Verbs","lat":"poseti to visit"},{"mk":"Поминува","en":"(time)","cat":"Verbs","lat":"pominuva to pass"},{"mk":"Проаѓа","en":"(imperfect)","cat":"Verbs","lat":"proagja to pass by"},{"mk":"Проиде","en":"(perfect)","cat":"Verbs","lat":"projde to pass"},{"mk":"Виде","en":"(perfect)","cat":"Verbs","lat":"vide to see"},{"mk":"Летува","en":"vacation","cat":"Verbs","lat":"letuva to go on summer"},{"mk":"Расипнува","en":"up","cat":"Verbs","lat":"raskinuva to break"},{"mk":"Продолжува","en":"continue","cat":"Verbs","lat":"prodolzjuva to"},{"mk":"Пее","en":"sing","cat":"Verbs","lat":"pee to"},{"mk":"Јужен, јужна, јужно, јужни","en":"juzjen, juzjna, juzjno, juzjni southern","cat":"Direction Adjectives","lat":""},{"mk":"Северен, северна, северно, севернi","en":"severen, severna, severno, severni","cat":"Direction Adjectives","lat":""},{"mk":"Источен, источна, источно, источни","en":"istocjen, istocjna, istocjno,","cat":"Direction Adjectives","lat":""},{"mk":"Западен, западна, западно, западни","en":"zapaden, zapadna, zapadno, zapadni","cat":"Direction Adjectives","lat":""},{"mk":"Централен, централна, централно, централни","en":"centralen, centralna,","cat":"Direction Adjectives","lat":""},{"mk":"Крајбрежен, крајбрежна, крајбрежно, крајбрежни","en":"krajbrezjen, krajbrezjna,","cat":"Direction Adjectives","lat":""},{"mk":"Шумски, шумска, шумско, шумски","en":"sjumski, sjumska, sjumsko, sjumski forest","cat":"Direction Adjectives","lat":""},{"mk":"Градски, градска, градско, градски","en":"gradski, gradska, gradsko, gradski","cat":"Direction Adjectives","lat":""},{"mk":"Зелен, зелена, зелено, зелени","en":"zelen, zelena, zeleno, zeleni green","cat":"Colors","lat":""},{"mk":"Црвен, црвена, црвено, црвени","en":"cjrven, cjrvena, cjrveno, cjrveni red","cat":"Colors","lat":""},{"mk":"Портокалов, портокалова, портокалово, портокалови","en":"portokalov,","cat":"Colors","lat":""},{"mk":"Жолт, жолта, жолто, жолти","en":"zjolt, zjolta, zjolto, zjolti yellow","cat":"Colors","lat":""},{"mk":"Кафен, кафена, кафено, кафени","en":"kafen, kafena, kafeno, kafeni brown (shade","cat":"Colors","lat":""},{"mk":"Кафеав, кафеава, кафеаво, кафеави","en":"kafeav, kafeava, kafeavo, kafeavi","cat":"Colors","lat":""},{"mk":"Син, сина, сино, сини","en":"sin, sina, sino, sini blue (sky blue)","cat":"Colors","lat":""},{"mk":"Плав, плава, плаво, плави","en":"plav, plava, plavo, plavi blue (darker)","cat":"Colors","lat":""},{"mk":"Розев, розева, розево, розеви","en":"rozev, rozeva, rozevo, rozevi pink","cat":"Colors","lat":""},{"mk":"Виолетов, виолетова, виолетово, виолетови","en":"violetov, violetova,","cat":"Colors","lat":""},{"mk":"Сив, сива, сиво, сиви","en":"siv, siva, sivo, sivi grey","cat":"Colors","lat":""},{"mk":"Црн, црна, црно, црни","en":"cjrn, cjrna, cjrno, cjrni black","cat":"Colors","lat":""},{"mk":"Бел, бела, бело, бели","en":"bel, bela, belo, beli white","cat":"Colors","lat":""},{"mk":"Тиркизен, тиркизна, тиркизно, тиркизни","en":"tirkizen, tirkizna, tirkizno,","cat":"Colors","lat":""},{"mk":"Шарен, шарена, шарено, шарени","en":"sjaren, sjarena, sjareno, sjareni","cat":"Colors","lat":""},{"mk":"Темен, темна, темно, темни","en":"temen, temna, temno, temni dark","cat":"Colors","lat":""},{"mk":"Светол, светла, светло, светли","en":"svetol, svetla, svetlo, svetli light","cat":"Colors","lat":""},{"mk":"Темносин, темносина, темносино, темносини","en":"temnosin, temnosina,","cat":"Colors","lat":""},{"mk":"Светлосин, светлосина, светлосино, светлосини","en":"svetlosin, svetlosina,","cat":"Colors","lat":""},{"mk":"Скапоцен, скапоцена, скапоцено, скапоцени","en":"skapotsena, skrapotsena,","cat":"Colors","lat":""},{"mk":"Голем, голема, големо, големи","en":"golem, golema, golemo, golemi big","cat":"Size & Shape","lat":""},{"mk":"Мал, мала, мало, мали","en":"mal, mala, malo, mali small","cat":"Size & Shape","lat":""},{"mk":"Ситен, ситна, ситно, ситни","en":"siten, sitna, sitno, sitni tiny","cat":"Size & Shape","lat":""},{"mk":"Висок, висока, високо, виcoки","en":"visok, visoka, visoko, visoki tall","cat":"Size & Shape","lat":""},{"mk":"Низок, ниска, ниско, ниски","en":"nizok, niska, nisko, niski short (height)","cat":"Size & Shape","lat":""},{"mk":"Долг, долга, долго, долги","en":"dolg, dolga, dolgo, dolgi long","cat":"Size & Shape","lat":""},{"mk":"Краток, кратка, кратко, кратки","en":"kratok, kratka, kratko, kratki short","cat":"Size & Shape","lat":""},{"mk":"Дебел, дебела, дебело, дебели","en":"debel, debela, debelo, debeli fat","cat":"Size & Shape","lat":""},{"mk":"Слаб, слаба, слабо, слаби","en":"slab, slaba, slabo, slabi weak / thin","cat":"Size & Shape","lat":""},{"mk":"Тежок, тешка, тешко, тешки","en":"tezjok, tesjka, tesjko, tesjki hard / heavy","cat":"Size & Shape","lat":""},{"mk":"Топол, топла, топло, топли","en":"topol, topla, toplo, topli warm / hot","cat":"Temperature & Weather","lat":""},{"mk":"Ладен, ладна, ладно, ладни","en":"laden, ladna, ladno, ladni cold","cat":"Temperature & Weather","lat":""},{"mk":"Студен, студена, студено, студени","en":"studen, studena, studeno, studeni cold","cat":"Temperature & Weather","lat":""},{"mk":"Жежок, жешка, жешко, жешки","en":"zjezjok, zjesjka, zjesjko, zjesjki very hot","cat":"Temperature & Weather","lat":""},{"mk":"Сончев, сончева, сончево, сончеви","en":"soncjev, soncjeva, soncjevo, soncjevi","cat":"Temperature & Weather","lat":""},{"mk":"Влажен, влажна, влажно, влажни","en":"vlazjen, vlazjna, vlazjno, vlazjni humid","cat":"Temperature & Weather","lat":""},{"mk":"Прекумерен, прекумерна, прекумерно, прекумерни","en":"prekumeren, prekumerna,","cat":"Temperature & Weather","lat":""},{"mk":"Сладок, слатка, слатко, слатки","en":"sladok, slatka, slatko, slatki sweet","cat":"Taste","lat":""},{"mk":"Благ, блага, благо, благи","en":"blag, blaga, blago, blagi mild / gentle /","cat":"Taste","lat":""},{"mk":"Кисел, кисела, кисело, кисели","en":"kisel, kisela, kiselo, kiseli sour","cat":"Taste","lat":""},{"mk":"Горок, горка, горко, горки","en":"gorok, gorka, gorko, gorki bitter","cat":"Taste","lat":""},{"mk":"Лут, лута, луто, лути","en":"lut, luta, luto, luti spicy / hot / angry","cat":"Taste","lat":""},{"mk":"Солен, солена, солено, солени","en":"solen, solena, soleno, soleni salty","cat":"Taste","lat":""},{"mk":"Добар, добра, добро, добри","en":"dobar, dobra, dobro, dobri good","cat":"Personality & Character","lat":""},{"mk":"Паметен, паметна, паметно, паметни","en":"pameten, pametna, pametno, pametni","cat":"Personality & Character","lat":""},{"mk":"Глуп, глупа, глупо, глупи","en":"glup, glupa, glupo, glupi dumb / stupid","cat":"Personality & Character","lat":""},{"mk":"Силен, силна, силно, силни","en":"silen, silna, silno, silni strong","cat":"Personality & Character","lat":""},{"mk":"Богат, богата, богато, богати","en":"bogat, bogata, bogato, bogati rich","cat":"Personality & Character","lat":""},{"mk":"Сиромашен, сиромашна, сиромашно, сиромашни","en":"siromasjen, siromasjna,","cat":"Personality & Character","lat":""},{"mk":"Млад, млада, младо, млади","en":"mlad, mlada, mlado, mladi young","cat":"Personality & Character","lat":""},{"mk":"Стар, стара, старо, стари","en":"star, stara, staro, stari old","cat":"Personality & Character","lat":""},{"mk":"Нов, нова, ново, нови","en":"nov, nova, novo, novi new","cat":"Personality & Character","lat":""},{"mk":"Мирен, мирна, мирно, мирни","en":"miren, mirna, mirno, mirni peaceful / calm","cat":"Personality & Character","lat":""},{"mk":"Смирен, смирена, смирено, смирени","en":"smiren, smirena, smireno, smireni calm","cat":"Personality & Character","lat":""},{"mk":"Креативен, креативна, креативно, креативни","en":"kreativen, kreativna,","cat":"Personality & Character","lat":""},{"mk":"Злобен, злобна, злобно, злобни","en":"zloben, zlobna, zlobno, zlobni evil /","cat":"Personality & Character","lat":""},{"mk":"Гризлив, гризлива, гризливо, гризливи","en":"grizjliv, grizjliva, grizjlivo,","cat":"Personality & Character","lat":""},{"mk":"Посушен, послушна, послушно, послушни","en":"poslusjen, poslusjna, poslusjno,","cat":"Personality & Character","lat":""},{"mk":"Весел, весела, весело, весели","en":"vesel, vesela, veselo, veseli joyful","cat":"Personality & Character","lat":""},{"mk":"Опасен, опасна, опасно, опасни","en":"opasen, opasna, opasno, opasni dangerous","cat":"Personality & Character","lat":""},{"mk":"Љубопитен, љубопитна, љубопитно, љубопитни","en":"ljubopiten, ljubopitna,","cat":"Personality & Character","lat":""},{"mk":"Образован, образована, образовано, образовани","en":"obrazovan, obrazovana,","cat":"Personality & Character","lat":""},{"mk":"Тивок, тивка, тивко, тивки","en":"tivok, tivka, tivko, tivki quiet","cat":"Personality & Character","lat":""},{"mk":"Динамичен, динамична, динамично, динамични","en":"dinamicjen, dinamicjna,","cat":"Personality & Character","lat":""},{"mk":"Бавен, бавна, бавно, бавни","en":"baven, bavna, bavno, bavni slow","cat":"Personality & Character","lat":""},{"mk":"Медитативен, медитативна, медитативно, медитативни","en":"meditativen,","cat":"Personality & Character","lat":""},{"mk":"Аматерски, аматерска, аматерско, аматерски","en":"amaterski, amaterska,","cat":"Personality & Character","lat":""},{"mk":"Стратешки, стратешка, стратешко, стратешки","en":"stratesjki, stratesjka,","cat":"Personality & Character","lat":""},{"mk":"Работен, работна, работно, работни","en":"raboten, rabotna, rabotno, rabotni","cat":"Personality & Character","lat":""},{"mk":"Потенцијален, потенцијална, потенцијално, потенцијални","en":"potencijalen,","cat":"Personality & Character","lat":""},{"mk":"Омилен, омилена, омилено, омилени","en":"omilen, omilena, omileno, omileni","cat":"Personality & Character","lat":""},{"mk":"Убав, убава, убаво, убави","en":"ubav, ubava, ubavo, ubavi beautiful","cat":"Appearance","lat":""},{"mk":"Прекрасен, прекрасна, прекрасно, прекрасни","en":"prekrasen, prekrasna,","cat":"Appearance","lat":""},{"mk":"Грд, грда, грдо, грди","en":"grd, grda, grdo, grdi ugly","cat":"Appearance","lat":""},{"mk":"Згоден, згодна, згодно, згодни","en":"zgoden, zgodna, zgodno, zgodni handsome","cat":"Appearance","lat":""},{"mk":"Жив, жива, живо, живи","en":"zjiv, zjiva, zjivo, zjivi alive / live","cat":"Appearance","lat":""},{"mk":"Пријатен, пријатна, пријатно, пријатни","en":"prijaten, prijatna, prijatno,","cat":"Appearance","lat":""},{"mk":"Скриен, скриена, скриено, скриени","en":"skrien, skriena, skrieno, skrieni","cat":"Appearance","lat":""},{"mk":"Ситен, ситна, ситно, ситни","en":"siten, sitna, sitno, sitni tiny","cat":"Appearance","lat":""},{"mk":"Песочен, песочна, песочно, песочни","en":"pesocjen, pesocjna, pesocjno,","cat":"Appearance","lat":""},{"mk":"Совршен, совршена, совршено, совршени","en":"sovrsjen, sovrsjena, sovrsjeno,","cat":"Appearance","lat":""},{"mk":"Среќен, среќна, среќно, среќни","en":"srekjen, srekjna, srekjno, srekjni happy","cat":"Emotion Adjectives","lat":""},{"mk":"Тажен, тажна, тажно, тажни","en":"tazjen, tazjna, tazjno, tazjni sad","cat":"Emotion Adjectives","lat":""},{"mk":"Гневен, гневна, гневно, гневни","en":"gneven, gnevna, gnevno, gnevni angry","cat":"Emotion Adjectives","lat":""},{"mk":"Бесен, бесна, бесно, бесни","en":"besen, besna, besno, besni furious / angry","cat":"Emotion Adjectives","lat":""},{"mk":"Уморен, уморна, уморно, уморни","en":"umoren, umorna, umorno, umorni tired","cat":"Emotion Adjectives","lat":""},{"mk":"Возбуден, возбудена, возбудено, возбудени","en":"vozbuden, vozbudena,","cat":"Emotion Adjectives","lat":""},{"mk":"Напален, напалена, напалено, напалени","en":"napalen, napalena, napaleno,","cat":"Emotion Adjectives","lat":""},{"mk":"Фрустриран, фрустрирана, фрустрирано, фрустрирани","en":"frustriran,","cat":"Emotion Adjectives","lat":""},{"mk":"Енергизиран, енергизирана, енергизирано, енергизирани","en":"energiziran,","cat":"Emotion Adjectives","lat":""},{"mk":"Анксиозен, анксиозна, анксиозно, анксиозни","en":"anksiozen, anksiozna,","cat":"Emotion Adjectives","lat":""},{"mk":"Уплашен, уплашена, уплашено, уплашени","en":"uplasjen, uplasjena, uplasjeno,","cat":"Emotion Adjectives","lat":""},{"mk":"Страшен, страшна, страшно, страшни","en":"strasjeni, strasjna, strasjno,","cat":"Emotion Adjectives","lat":""},{"mk":"Страшлив, страшлива, страшливо, страшливи","en":"strasjliv, strasjliva,","cat":"Emotion Adjectives","lat":""},{"mk":"Изненаден, изненадена, изненадено, изненадени","en":"iznenaden, iznenadena,","cat":"Emotion Adjectives","lat":""},{"mk":"Збунет, збунета, збунето, збунети","en":"zbunet, zbuneta, zbuneto, zbuneti","cat":"Emotion Adjectives","lat":""},{"mk":"Вистински, вистинска, вистинско, вистински","en":"vistinski, vistinska,","cat":"Truth & Accuracy","lat":""},{"mk":"Лажен, лажна, лажно, лажни","en":"lazjen, lazjna, lazjno, lazjni false / fake","cat":"Truth & Accuracy","lat":""},{"mk":"Точен, точна, точно, точни","en":"tocjen, tocjna, tocjno, tocjni correct","cat":"Truth & Accuracy","lat":""},{"mk":"Неточен, неточна, неточно, неточни","en":"netocjen, netocjna, netocjno,","cat":"Truth & Accuracy","lat":""},{"mk":"Div, дива, диво, диви","en":"div, diva, divo, divi wild","cat":"Truth & Accuracy","lat":""},{"mk":"Мрачен, мрачна, мрачно, мрачни","en":"mracjen, mracjna, mracjno, mracjni dark /","cat":"Truth & Accuracy","lat":""},{"mk":"Слободен, слободна, слободно, слободни","en":"sloboden, slobodna, slobodno,","cat":"Miscellaneous","lat":""},{"mk":"Друг, друга, друго, други","en":"drug, druga, drugo, drugi another / other","cat":"Miscellaneous","lat":""},{"mk":"Расипан, расипана, расипано, расипани","en":"rasipan, rasipana, rasipano,","cat":"Miscellaneous","lat":""},{"mk":"Минат, минатa, минато, минати","en":"minat, minata, minato, minati past (adj.)","cat":"Miscellaneous","lat":""},{"mk":"Иден, идна, идно, идни","en":"iden, idna, idno, idni future (adj.)","cat":"Miscellaneous","lat":""},{"mk":"Следен, следна, следно, следни","en":"sleden, sledna, sledno, sledni next","cat":"Miscellaneous","lat":""},{"mk":"Последен, последна, последно, последни","en":"posleden, posledna, posledno,","cat":"Miscellaneous","lat":""},{"mk":"Цел, цела, цело, цели","en":"cel, cela, celo, celi entire / whole","cat":"Miscellaneous","lat":""},{"mk":"Сам, сама, само, сами","en":"sam, sama, samo, sami alone","cat":"Miscellaneous","lat":""},{"mk":"Ист, иста, исто, исти","en":"ist, ista, isto, isti same","cat":"Miscellaneous","lat":""},{"mk":"Разен, разна, разно, разни","en":"razen, razna, razno, razni various","cat":"Miscellaneous","lat":""},{"mk":"Различен, различна, различно, различни","en":"razlicjen, razlicjna, razlicjno,","cat":"Miscellaneous","lat":""},{"mk":"Ваков, ваква, вакво, вакви","en":"vakov, vakva, vakvo, vakvi this type / this","cat":"Miscellaneous","lat":""},{"mk":"Таков, таква, такво, такви","en":"takov, takva, takvo, takvi that type / that","cat":"Miscellaneous","lat":""},{"mk":"Онаков, онаква, онакво, онакви","en":"onakov, onakva, onakvo, onakvi that kind","cat":"Miscellaneous","lat":""},{"mk":"Мој, моја, мое, мои","en":"moj, moja, moe, moi my / mine","cat":"Possessive Adjectives","lat":""},{"mk":"Твој, твоја, твое, твои","en":"tvoj, tvoja, tvoe, tvoi your / yours (singular)","cat":"Possessive Adjectives","lat":""},{"mk":"Негов, негова, негово, негови","en":"negov, negova, negovo, negovi his","cat":"Possessive Adjectives","lat":""},{"mk":"Нејзин, нејзина, нејзино, нејзини","en":"nejzin, nejzina, nejzino, nejzini her","cat":"Possessive Adjectives","lat":""},{"mk":"Наш, наша, наше, наши","en":"nasj, nasja, nasje, nasji our / ours","cat":"Possessive Adjectives","lat":""},{"mk":"Ваш, ваша, ваше, ваши","en":"vasj, vasja, vasje, vasji your / yours (plural)","cat":"Possessive Adjectives","lat":""},{"mk":"Нивни, нивна, нивно, нивни","en":"nivni, nivna, nivno, nivni their / theirs","cat":"Possessive Adjectives","lat":""},{"mk":"Секогаш","en":"always","cat":"Verbs","lat":"sekogasj"},{"mk":"Честo","en":"frequently","cat":"Verbs","lat":"cjesto often /"},{"mk":"Обично","en":"usually","cat":"Verbs","lat":"obicjno"},{"mk":"Некогаш","en":"sometimes","cat":"Verbs","lat":"nekogasj"},{"mk":"Ретко","en":"rarely","cat":"Verbs","lat":"retko"},{"mk":"Никогаш","en":"never","cat":"Verbs","lat":"nikogasj"},{"mk":"Секој ден","en":"day","cat":"Verbs","lat":"sekoj den every"},{"mk":"Неkoj ден","en":"day","cat":"Verbs","lat":"nekoj den some"},{"mk":"Тука","en":"here","cat":"Verbs","lat":"tuka"},{"mk":"Таму","en":"there","cat":"Verbs","lat":"tamu"},{"mk":"Далеку","en":"far","cat":"Verbs","lat":"daleku"},{"mk":"Блиску","en":"close","cat":"Verbs","lat":"blisku"},{"mk":"Надвор","en":"outside","cat":"Verbs","lat":"nadvor"},{"mk":"Внатре","en":"inside","cat":"Verbs","lat":"vnatre"},{"mk":"Наоколу","en":"around","cat":"Verbs","lat":"naokolu"},{"mk":"Напред","en":"forward","cat":"Verbs","lat":"napred"},{"mk":"Сега","en":"now","cat":"Verbs","lat":"sega"},{"mk":"Тогаш","en":"then","cat":"Verbs","lat":"togasj"},{"mk":"Веднаш","en":"immediately","cat":"Verbs","lat":"vednasj"},{"mk":"Еднаш","en":"time","cat":"Verbs","lat":"ednasj once / one"},{"mk":"Наеднаш","en":"suddenly","cat":"Verbs","lat":"naednasj"},{"mk":"Порано","en":"past","cat":"Verbs","lat":"porano earlier / in the"},{"mk":"Потоа","en":"that","cat":"Verbs","lat":"potoa then / after"},{"mk":"Подоцна / Подоцна","en":"later","cat":"Verbs","lat":"pokasno / podocna"},{"mk":"Рано","en":"early","cat":"Verbs","lat":"rano"},{"mk":"Касно / Доцна","en":"late","cat":"Verbs","lat":"kasno / docna"},{"mk":"Уште","en":"more","cat":"Verbs","lat":"usjte still /"},{"mk":"Веќе","en":"(in negation)","cat":"Verbs","lat":"vekje already / anymore"},{"mk":"Повеќе","en":"(in negation)","cat":"Verbs","lat":"povekje more / anymore"},{"mk":"Само","en":"just","cat":"Verbs","lat":"samo only /"},{"mk":"Исто така","en":"also","cat":"Verbs","lat":"isto taka"},{"mk":"Воопшто","en":"all","cat":"Verbs","lat":"voopsjto at"},{"mk":"Особено","en":"especially","cat":"Verbs","lat":"osobeno"},{"mk":"Верoјатно","en":"probably","cat":"Verbs","lat":"verojatno"},{"mk":"Сепак","en":"nevertheless","cat":"Verbs","lat":"sepak still /"},{"mk":"Со други зборови","en":"words","cat":"Verbs","lat":"so drugi zborovi in other"},{"mk":"Во никој случај","en":"way","cat":"Verbs","lat":"vo nikoj slucjaj in no case / no"},{"mk":"Исто","en":"same","cat":"Verbs","lat":"isto also / the"},{"mk":"Затоа што / Бидејќи / Зашто / Оти","en":"oti","cat":"Conjunctions","lat":"zatoa sjto / bidejkji / zasjto /"},{"mk":"Затоа","en":"that's why","cat":"Conjunctions","lat":"zatoa"},{"mk":"Поради","en":"of","cat":"Conjunctions","lat":"poradi because"},{"mk":"Додека","en":"until","cat":"Conjunctions","lat":"dodeka while /"},{"mk":"Туку tuku but / rather (used instead of 'но'","en":"contrast)","cat":"Conjunctions","lat":"for"},{"mk":"Освен","en":"except","cat":"Conjunctions","lat":"osven"},{"mk":"Покрај","en":"though","cat":"Conjunctions","lat":"pokraj beside / even"},{"mk":"Иако","en":"although","cat":"Conjunctions","lat":"iako"},{"mk":"Отколку","en":"(in comparisons)","cat":"Conjunctions","lat":"otkolku than"},{"mk":"Дека","en":"(after think/know/feel)","cat":"Conjunctions","lat":"deka that"},{"mk":"Да","en":"(intention, after think)","cat":"Conjunctions","lat":"da to / that"},{"mk":"Ако","en":"if","cat":"Conjunctions","lat":"ako"},{"mk":"Но","en":"but","cat":"Conjunctions","lat":"no"},{"mk":"И","en":"and","cat":"Conjunctions","lat":"i"},{"mk":"Или","en":"or","cat":"Conjunctions","lat":"ili"},{"mk":"Како да","en":"if","cat":"Conjunctions","lat":"kako da as"},{"mk":"Не само што … туку и","en":"… tuku i not only … but also","cat":"Conjunctions","lat":"ne samo sjto"},{"mk":"Во","en":"[space, time, days, months, years, hours]","cat":"Prepositions","lat":"vo in / at / on"},{"mk":"Од","en":"from","cat":"Prepositions","lat":"od"},{"mk":"До","en":"until","cat":"Prepositions","lat":"do to /"},{"mk":"Со","en":"with","cat":"Prepositions","lat":"so"},{"mk":"Без","en":"without","cat":"Prepositions","lat":"bez"},{"mk":"За","en":"(future time)","cat":"Prepositions","lat":"za for / about / in"},{"mk":"На","en":"[possession, abstract spaces, dative]","cat":"Prepositions","lat":"na on / at / to / of"},{"mk":"Пред","en":"[time and space]","cat":"Prepositions","lat":"pred before / in front of"},{"mk":"После","en":"[time only]","cat":"Prepositions","lat":"posle after"},{"mk":"Покрај","en":"[physical and metaphorical]","cat":"Prepositions","lat":"pokraj beside"},{"mk":"Околу","en":"approximately","cat":"Prepositions","lat":"okolu around /"},{"mk":"За време на","en":"during","cat":"Prepositions","lat":"za vreme na"},{"mk":"Наместо","en":"of","cat":"Prepositions","lat":"namesto instead"},{"mk":"Меѓу","en":"between","cat":"Prepositions","lat":"megju"},{"mk":"Прeku","en":"via","cat":"Prepositions","lat":"preku through /"},{"mk":"Близу до","en":"to","cat":"Prepositions","lat":"blisku do close"},{"mk":"Во близина на","en":"to","cat":"Prepositions","lat":"vo blizina na in proximity"},{"mk":"Далеку од","en":"from","cat":"Prepositions","lat":"daleku od far"}];
 
-let words = [], learned = new Set(), dailyWords = [], dailyDone = new Set();
-let fcDeck = [], fcIdx = 0, fcFlipped = false, fcCatFilter = '';
+const S_LEARNED = 'mk_learned';
+const S_DAILY = 'mk_daily_v2';
+const S_STREAK = 'mk_streak';
 
-function today() { return new Date().toISOString().slice(0,10); }
+let learned = new Set();
+let dailyWords = [], dailyDone = new Set();
+let streak = 1;
+let fcDeck = [], fcIdx = 0, fcFlipped = false, fcCat = '';
+let libFilter = 'all';
 
-function load() {
-  try { words = JSON.parse(localStorage.getItem(STORAGE_WORDS) || '[]'); } catch(e) { words = []; }
-  try { learned = new Set(JSON.parse(localStorage.getItem(STORAGE_LEARNED) || '[]')); } catch(e) {}
-  try {
-    const d = JSON.parse(localStorage.getItem(STORAGE_DAILY) || '{}');
-    if (d.date === today()) { dailyWords = d.words || []; dailyDone = new Set(d.done || []); }
-  } catch(e) {}
-  refresh();
+const CAT_COLORS = ['#d4a853','#8fb87a','#7eb5d4','#b87ea0','#c9836b','#7ab8b0','#a0a87e','#c4c4c4','#d4a853','#8fb87a','#7eb5d4','#b87ea0','#c9836b','#7ab8b0','#a0a87e'];
+
+function today(){ return new Date().toISOString().slice(0,10); }
+
+function loadStorage(){
+  try{ learned = new Set(JSON.parse(localStorage.getItem(S_LEARNED)||'[]')); }catch(e){}
+  try{
+    const d = JSON.parse(localStorage.getItem(S_DAILY)||'[]');
+    if(d.date===today()){ dailyWords=d.words||[]; dailyDone=new Set(d.done||[]); }
+  }catch(e){}
+  try{ streak = parseInt(localStorage.getItem(S_STREAK)||'1')||1; }catch(e){}
 }
 
-function save() { localStorage.setItem(STORAGE_WORDS, JSON.stringify(words)); }
-function saveLearned() { localStorage.setItem(STORAGE_LEARNED, JSON.stringify([...learned])); }
-function saveDaily() { localStorage.setItem(STORAGE_DAILY, JSON.stringify({ date: today(), words: dailyWords, done: [...dailyDone] })); }
+function saveL(){ localStorage.setItem(S_LEARNED, JSON.stringify([...learned])); }
+function saveD(){ localStorage.setItem(S_DAILY, JSON.stringify({date:today(),words:dailyWords,done:[...dailyDone]})); }
 
-function refresh() {
-  updateStats(); renderHome(); renderLibrary(); renderDaily();
-  renderFcChips(); buildDeck(); showCard();
-}
+function cats(){ return [...new Set(ALL_WORDS.map(w=>w.cat).filter(Boolean))]; }
+function catColor(cat){ return CAT_COLORS[cats().indexOf(cat)%CAT_COLORS.length]; }
 
-function getCategories() { return [...new Set(words.map(w => w.cat).filter(Boolean))]; }
-function catColor(cat) { const i = getCategories().indexOf(cat); return CAT_COLORS[i % CAT_COLORS.length]; }
+function refresh(){ updateStats(); renderHome(); renderLib(); renderDaily(); renderChips(); buildDeck(); showCard(); }
 
-function updateStats() {
-  document.getElementById('st-total').textContent = words.length;
+function updateStats(){
+  document.getElementById('st-total').textContent = ALL_WORDS.length;
   document.getElementById('st-learned').textContent = learned.size;
-  document.getElementById('st-cats').textContent = getCategories().length;
+  document.getElementById('st-cats').textContent = cats().length;
+  document.getElementById('st-streak').textContent = streak;
   const done = dailyDone.size;
-  document.getElementById('daily-prog-txt').textContent = done + ' / ' + Math.min(dailyWords.length || 10, 10) + ' reviewed';
-  document.getElementById('daily-pbar').style.width = Math.round(Math.min(done, 10) / 10 * 100) + '%';
-  const catDL = document.getElementById('cat-datalist');
-  if (catDL) catDL.innerHTML = getCategories().map(c => `<option value="${c}">`).join('');
+  const total = dailyWords.length||10;
+  document.getElementById('daily-prog-txt').textContent = done+' / '+total+' reviewed today';
+  document.getElementById('daily-pbar').style.width = Math.round(Math.min(done,total)/total*100)+'%';
 }
 
-function renderHome() {
-  const cats = getCategories();
-  const el = document.getElementById('home-cats');
-  if (!cats.length) { el.innerHTML = '<div class="empty">No categories yet.<br>Import words to begin.</div>'; return; }
-  el.innerHTML = cats.map(cat => {
-    const ws = words.filter(w => w.cat === cat);
-    const lc = ws.filter(w => learned.has(w.mk)).length;
-    const pct = ws.length ? Math.round(lc / ws.length * 100) : 0;
+function renderHome(){
+  const allCats = cats();
+  document.getElementById('home-cats').innerHTML = allCats.map(cat=>{
+    const ws = ALL_WORDS.filter(w=>w.cat===cat);
+    const lc = ws.filter(w=>learned.has(w.mk)).length;
+    const pct = ws.length ? Math.round(lc/ws.length*100) : 0;
     const col = catColor(cat);
-    return `<div class="cat-row">
-      <div class="cat-name" style="color:${col}">${cat}</div>
-      <div style="flex:1;"><div class="pbar-wrap" style="margin:0;"><div class="pbar" style="width:${pct}%;background:${col};"></div></div></div>
-      <div class="cat-count">${lc}/${ws.length}</div>
-    </div>`;
+    return '<div class="cat-row"><div class="cat-name" style="color:'+col+'">'+cat+'</div>'+
+      '<div style="flex:1"><div class="pbar-wrap" style="margin:0"><div class="pbar" style="width:'+pct+'%;background:'+col+'"></div></div></div>'+
+      '<div class="cat-count">'+lc+'/'+ws.length+'</div></div>';
   }).join('');
 }
 
-function renderDaily() {
-  const el = document.getElementById('daily-list');
-  const empty = document.getElementById('daily-empty');
-  const refreshRow = document.getElementById('daily-refresh-row');
-  if (!words.length) { empty.style.display = 'block'; el.innerHTML = ''; return; }
-  empty.style.display = 'none';
-  if (!dailyWords.length) pickDaily();
-  const status = document.getElementById('daily-status');
-  status.textContent = dailyDone.size + ' / ' + dailyWords.length + ' completed';
-  el.innerHTML = dailyWords.map(mk => {
-    const w = words.find(x => x.mk === mk); if (!w) return '';
-    const done = dailyDone.has(mk);
-    return `<div class="daily-word ${done ? 'done' : ''}">
-      <div class="word-check ${done ? 'done' : ''}" onclick="toggleDaily('${esc(mk)}')">
-        ${done ? '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#8fb87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
-      </div>
-      <div class="word-mk">${w.mk}</div>
-      <div class="word-en">${w.en}</div>
-      ${w.cat ? `<div class="cat-badge" style="border-color:${catColor(w.cat)}20;color:${catColor(w.cat)};">${w.cat}</div>` : ''}
-    </div>`;
-  }).join('');
-  refreshRow.style.display = dailyDone.size >= dailyWords.length && dailyWords.length > 0 ? '' : 'none';
-}
-
-function pickDaily() {
-  const pool = words.filter(w => !learned.has(w.mk));
-  const rest = words.filter(w => learned.has(w.mk)).sort(() => Math.random() - 0.5);
-  const combined = [...pool.sort(() => Math.random() - 0.5), ...rest];
-  dailyWords = combined.slice(0, 10).map(w => w.mk);
+function pickDaily(){
+  const pool = ALL_WORDS.filter(w=>!learned.has(w.mk)).sort(()=>Math.random()-0.5);
+  const extra = ALL_WORDS.filter(w=>learned.has(w.mk)).sort(()=>Math.random()-0.5);
+  const combined = [...pool,...extra];
+  dailyWords = combined.slice(0,10).map(w=>w.mk);
   dailyDone = new Set();
-  saveDaily();
+  saveD();
 }
 
-function refreshDaily() { dailyWords = []; pickDaily(); renderDaily(); updateStats(); }
+function newDaily(){ pickDaily(); renderDaily(); updateStats(); }
 
-function toggleDaily(mk) {
-  if (dailyDone.has(mk)) dailyDone.delete(mk); else dailyDone.add(mk);
-  saveDaily(); renderDaily(); updateStats();
+function renderDaily(){
+  if(!dailyWords.length) pickDaily();
+  document.getElementById('daily-status').textContent = dailyDone.size+' / '+dailyWords.length+' completed';
+  document.getElementById('daily-list').innerHTML = dailyWords.map(mk=>{
+    const w = ALL_WORDS.find(x=>x.mk===mk); if(!w) return '';
+    const done = dailyDone.has(mk);
+    const col = catColor(w.cat);
+    return '<div class="daily-word '+(done?'done':'')+'">'+
+      '<div class="word-check '+(done?'done':'')+'" onclick="togDay(\''+esc(mk)+'\')">'+
+      (done?'<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#8fb87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+
+      '</div>'+
+      '<div class="word-mk">'+w.mk+'</div>'+
+      '<div class="word-lat">'+w.lat+'</div>'+
+      '<div class="word-en">'+w.en+'</div>'+
+      (w.cat?'<div class="cat-badge" style="border-color:'+col+'40;color:'+col+'">'+w.cat+'</div>':'')+
+      '</div>';
+  }).join('');
+  document.getElementById('daily-new-row').style.display = (dailyDone.size>=dailyWords.length && dailyWords.length>0)?'':' none';
+  updateStats();
 }
 
-function renderLibrary() {
-  const search = (document.getElementById('lib-search').value || '').toLowerCase();
+function togDay(mk){
+  if(dailyDone.has(mk)) dailyDone.delete(mk); else dailyDone.add(mk);
+  saveD(); renderDaily();
+}
+
+function renderLib(){
+  const q = (document.getElementById('lib-q').value||'').toLowerCase();
   const catF = document.getElementById('lib-cat').value;
   const sel = document.getElementById('lib-cat');
   const prev = sel.value;
-  const cats = getCategories();
-  sel.innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option value="${c}" ${c === prev ? 'selected' : ''}>${c}</option>`).join('');
-  if (prev) sel.value = prev;
-  const filtered = words.filter(w => {
-    const ms = !search || w.mk.toLowerCase().includes(search) || w.en.toLowerCase().includes(search);
-    const mc = !catF || w.cat === catF;
-    return ms && mc;
+  sel.innerHTML = '<option value="">All categories</option>'+cats().map(c=>'<option value="'+c+'" '+(c===prev?'selected':'')+'>'+c+'</option>').join('');
+  if(prev) sel.value=prev;
+  let filtered = ALL_WORDS.filter(w=>{
+    const ms = !q || w.mk.toLowerCase().includes(q)||w.en.toLowerCase().includes(q)||(w.lat||'').toLowerCase().includes(q);
+    const mc = !catF || w.cat===catF;
+    const mf = libFilter==='all'||(libFilter==='learned'&&learned.has(w.mk))||(libFilter==='unlearned'&&!learned.has(w.mk));
+    return ms&&mc&&mf;
   });
   const el = document.getElementById('lib-list');
-  if (!filtered.length) { el.innerHTML = '<div class="empty">No words found.</div>'; return; }
-  el.innerHTML = filtered.slice(0, 80).map(w => {
+  if(!filtered.length){el.innerHTML='<div class="empty">No words found.</div>';return;}
+  el.innerHTML = filtered.slice(0,100).map(w=>{
     const lrn = learned.has(w.mk);
-    return `<div class="word-row">
-      <div class="word-check ${lrn ? 'done' : ''}" onclick="toggleLearned('${esc(w.mk)}')">
-        ${lrn ? '<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#8fb87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
-      </div>
-      <div class="word-mk">${w.mk}</div>
-      <div class="word-en">${w.en}</div>
-      ${w.cat ? `<div class="cat-badge" style="border-color:${catColor(w.cat)}30;color:${catColor(w.cat)};">${w.cat}</div>` : ''}
-      <div class="word-del" onclick="deleteWord('${esc(w.mk)}')">×</div>
-    </div>`;
-  }).join('') + (filtered.length > 80 ? `<div style="font-size:11px;color:var(--text3);padding:8px 0;font-family:'DM Mono',monospace;">${filtered.length - 80} more — use search to filter</div>` : '');
+    const col = catColor(w.cat);
+    return '<div class="word-row">'+
+      '<div class="word-check '+(lrn?'done':'')+'" onclick="togL(\''+esc(w.mk)+'\')">'+
+      (lrn?'<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" fill="none" stroke="#8fb87a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+
+      '</div>'+
+      '<div class="word-mk">'+w.mk+'</div>'+
+      '<div class="word-lat">'+w.lat+'</div>'+
+      '<div class="word-en">'+w.en+'</div>'+
+      (w.cat?'<div class="cat-badge" style="border-color:'+col+'40;color:'+col+'">'+w.cat+'</div>':'')+
+      '</div>';
+  }).join('')+
+  (filtered.length>100?'<div style="font-size:11px;color:var(--text3);padding:8px 0;font-family:'DM Mono',monospace;">'+( filtered.length-100)+' more — use search</div>':''  );
 }
 
-function toggleLearned(mk) { if (learned.has(mk)) learned.delete(mk); else learned.add(mk); saveLearned(); renderLibrary(); renderHome(); updateStats(); }
-function deleteWord(mk) { words = words.filter(w => w.mk !== mk); save(); refresh(); }
-
-function addWord() {
-  const mk = document.getElementById('add-mk').value.trim();
-  const en = document.getElementById('add-en').value.trim();
-  const cat = document.getElementById('add-cat').value.trim();
-  if (!mk || !en) return;
-  if (!words.find(w => w.mk === mk)) { words.push({ mk, en, cat }); save(); }
-  document.getElementById('add-mk').value = '';
-  document.getElementById('add-en').value = '';
-  document.getElementById('add-cat').value = '';
-  refresh();
+function setFilter(f){
+  libFilter = f;
+  document.querySelectorAll('#s-library .chip[onclick]').forEach(b=>{
+    b.style.borderColor=''; b.style.color='';
+  });
+  event.target.style.borderColor='rgba(212,168,83,0.5)';
+  event.target.style.color='var(--accent)';
+  renderLib();
 }
 
-function renderFcChips() {
-  const cats = getCategories();
-  document.getElementById('fc-chips').innerHTML = ['All', ...cats].map(c => `<button class="chip ${(c === 'All' && !fcCatFilter) || c === fcCatFilter ? 'active' : ''}" onclick="setFcCat('${esc(c)}')">${c}</button>`).join('');
+function togL(mk){ if(learned.has(mk)) learned.delete(mk); else learned.add(mk); saveL(); renderLib(); renderHome(); updateStats(); }
+
+function renderChips(){
+  const allCats = cats();
+  document.getElementById('fc-chips').innerHTML = ['All',...allCats].map(c=>
+    '<button class="chip '+(( c==='All'&&!fcCat)||(c===fcCat)?'active':'')+'" onclick="setFcCat(\''+esc(c)+'\')">'+c+'</button>'
+  ).join('');
 }
 
-function setFcCat(cat) { fcCatFilter = cat === 'All' ? '' : cat; fcIdx = 0; fcFlipped = false; renderFcChips(); buildDeck(); showCard(); }
+function setFcCat(c){ fcCat=c==='All'?'':c; fcIdx=0; fcFlipped=false; renderChips(); buildDeck(); showCard(); }
 
-function buildDeck() {
-  fcDeck = (fcCatFilter ? words.filter(w => w.cat === fcCatFilter) : [...words]).sort(() => Math.random() - 0.5);
+function buildDeck(){
+  fcDeck = (fcCat?ALL_WORDS.filter(w=>w.cat===fcCat):[...ALL_WORDS]).sort(()=>Math.random()-0.5);
 }
 
-function showCard() {
-  const inner = document.getElementById('fc-inner');
-  inner.classList.remove('flipped');
-  fcFlipped = false;
-  document.getElementById('fc-no').style.display = 'none';
-  document.getElementById('fc-yes').style.display = 'none';
-  if (!fcDeck.length) {
-    document.getElementById('fc-word').textContent = '—';
-    document.getElementById('fc-hint').textContent = 'no words yet';
-    document.getElementById('fc-counter').textContent = '0 / 0';
-    return;
-  }
-  const w = fcDeck[fcIdx];
-  document.getElementById('fc-word').textContent = w.mk;
-  document.getElementById('fc-hint').textContent = 'tap to reveal';
-  document.getElementById('fc-trans').textContent = w.en;
-  document.getElementById('fc-cat-label').textContent = w.cat || '';
-  document.getElementById('fc-counter').textContent = (fcIdx + 1) + ' / ' + fcDeck.length;
+function showCard(){
+  document.getElementById('fc-inner').classList.remove('flipped');
+  fcFlipped=false;
+  document.getElementById('fc-no').style.display='none';
+  document.getElementById('fc-yes').style.display='none';
+  if(!fcDeck.length){ document.getElementById('fc-word').textContent='—'; document.getElementById('fc-ctr').textContent='0 / 0'; return; }
+  const w=fcDeck[fcIdx];
+  document.getElementById('fc-word').textContent=w.mk;
+  document.getElementById('fc-lat').textContent=w.lat||'';
+  document.getElementById('fc-hint').textContent='tap to reveal translation';
+  document.getElementById('fc-trans').textContent=w.en;
+  document.getElementById('fc-lat-back').textContent=w.lat||'';
+  document.getElementById('fc-cat-lbl').textContent=w.cat||'';
+  document.getElementById('fc-ctr').textContent=(fcIdx+1)+' / '+fcDeck.length;
 }
 
-function flipCard() {
-  if (!fcDeck.length) return;
-  const inner = document.getElementById('fc-inner');
-  if (!fcFlipped) {
-    fcFlipped = true;
-    inner.classList.add('flipped');
-    document.getElementById('fc-hint').textContent = '';
-    document.getElementById('fc-no').style.display = '';
-    document.getElementById('fc-yes').style.display = '';
+function flip(){
+  if(!fcDeck.length) return;
+  if(!fcFlipped){
+    fcFlipped=true;
+    document.getElementById('fc-inner').classList.add('flipped');
+    document.getElementById('fc-hint').textContent='';
+    document.getElementById('fc-no').style.display='';
+    document.getElementById('fc-yes').style.display='';
   }
 }
 
-function fcAnswer(knew) {
-  if (!fcDeck.length) return;
-  const w = fcDeck[fcIdx];
-  if (knew) { learned.add(w.mk); saveLearned(); updateStats(); renderHome(); }
+function fcAns(knew){
+  if(!fcDeck.length) return;
+  if(knew){ learned.add(fcDeck[fcIdx].mk); saveL(); updateStats(); renderHome(); }
   fcNext();
 }
 
-function fcNext() { if (!fcDeck.length) return; fcIdx = (fcIdx + 1) % fcDeck.length; showCard(); }
-function fcPrev() { if (!fcDeck.length) return; fcIdx = (fcIdx - 1 + fcDeck.length) % fcDeck.length; showCard(); }
+function fcNext(){ if(!fcDeck.length) return; fcIdx=(fcIdx+1)%fcDeck.length; showCard(); }
+function fcPrev(){ if(!fcDeck.length) return; fcIdx=(fcIdx-1+fcDeck.length)%fcDeck.length; showCard(); }
 
-async function claudeExtract(text) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 1000,
-      system: 'Extract Macedonian vocabulary. Return ONLY a JSON array, no markdown. Format: [{"mk":"word","en":"translation","cat":"Category"}]. Categories: Days & Time, Months & Seasons, Colors, Adjectives, Nouns, Verbs, Numbers & Ordinals, Prepositions, Frequency, Food, Family, Home, Animals, Emotions, Travel, Grammar. Extract every Macedonian word/phrase with its English meaning.',
-      messages: [{ role: 'user', content: `Extract all Macedonian vocabulary:\n\n${text.slice(0, 3500)}` }]
-    })
-  });
-  const data = await resp.json();
-  const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  const clean = raw.replace(/```json|```/g, '').trim();
-  const s = clean.indexOf('['), e = clean.lastIndexOf(']');
-  if (s >= 0 && e > s) return JSON.parse(clean.slice(s, e + 1));
-  return [];
-}
-
-function logLine(msg, type = '') {
-  document.getElementById('import-log').innerHTML += `<div class="log-line ${type}">${msg}</div>`;
-}
-
-async function importText() {
-  const text = document.getElementById('import-text').value.trim();
-  if (!text) return;
-  document.getElementById('import-log').innerHTML = '<div class="loading"><div class="spinner"></div>Extracting vocabulary...</div>';
-  try {
-    const extracted = await claudeExtract(text);
-    let added = 0;
-    for (const w of extracted) { if (w.mk && w.en && !words.find(x => x.mk === w.mk)) { words.push(w); added++; } }
-    save(); dailyWords = []; saveDaily(); refresh();
-    document.getElementById('import-log').innerHTML = `<div class="log-line ok">✓ Added ${added} new words from ${extracted.length} extracted.</div>`;
-    document.getElementById('import-text').value = '';
-  } catch(e) {
-    document.getElementById('import-log').innerHTML = `<div class="log-line err">Error: ${e.message}</div>`;
-  }
-}
-
-async function searchDrive() {
-  const q = document.getElementById('drive-q').value.trim() || 'македонски';
-  const el = document.getElementById('drive-results');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div>Searching Drive...</div>';
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 1000,
-        system: 'Search Google Drive for files. Return ONLY a JSON array: [{"id":"file_id","name":"filename"}]. No markdown.',
-        messages: [{ role: 'user', content: `Search Google Drive for: "${q}". Return up to 6 files.` }],
-        mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }]
-      })
-    });
-    const data = await resp.json();
-    const txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-    const toolTxt = (data.content || []).filter(b => b.type === 'mcp_tool_result').map(b => (b.content || []).map(c => c.text || '').join('')).join('');
-    let files = [];
-    try {
-      const combined = txt + toolTxt;
-      const s = combined.indexOf('['), e = combined.lastIndexOf(']');
-      if (s >= 0 && e > s) files = JSON.parse(combined.slice(s, e + 1));
-    } catch(e2) {}
-    if (!files.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-family:\'DM Mono\',monospace;padding:8px 0;">No files found. Try a different search term.</div>'; return; }
-    el.innerHTML = files.map(f => `<div class="drive-file"><div class="drive-name">${f.name || f.id}</div><button class="btn btn-accent" style="font-size:11px;padding:6px 12px;" onclick="extractDriveFile('${esc(f.id)}','${esc(f.name||'')}')">Extract →</button></div>`).join('');
-  } catch(e) {
-    el.innerHTML = `<div class="log-line err">Drive error: ${e.message}</div>`;
-  }
-}
-
-async function extractDriveFile(fileId, name) {
-  const el = document.getElementById('drive-results');
-  el.innerHTML = `<div class="loading"><div class="spinner"></div>Reading "${name}"...</div>`;
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 4000,
-        system: 'Read a Google Drive document including ALL tabs. Extract all Macedonian vocabulary. Return ONLY a JSON array: [{"mk":"word","en":"translation","cat":"Category"}]. Categories: Days & Time, Months & Seasons, Colors, Adjectives, Nouns, Verbs, Numbers & Ordinals, Prepositions, Frequency, Food, Family, Home, Animals, Emotions, Travel. No markdown.',
-        messages: [{ role: 'user', content: `Read ALL tabs of this Google Drive file (ID: ${fileId}) and extract all Macedonian vocabulary.` }],
-        mcp_servers: [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }]
-      })
-    });
-    const data = await resp.json();
-    const allText = (data.content || []).map(b => b.type === 'text' ? b.text : b.type === 'mcp_tool_result' ? (b.content || []).map(c => c.text || '').join('') : '').join('');
-    let extracted = [];
-    try { const s = allText.indexOf('['), e = allText.lastIndexOf(']'); if (s >= 0 && e > s) extracted = JSON.parse(allText.slice(s, e + 1)); } catch(e2) {}
-    if (!extracted.length) { const extracted2 = await claudeExtract(allText); extracted = extracted2; }
-    let added = 0;
-    for (const w of extracted) { if (w.mk && w.en && !words.find(x => x.mk === w.mk)) { words.push(w); added++; } }
-    save(); dailyWords = []; saveDaily(); refresh();
-    el.innerHTML = `<div class="log-line ok">✓ Extracted ${added} new words from "${name}".</div>`;
-  } catch(e) {
-    el.innerHTML = `<div class="log-line err">Error: ${e.message}</div>`;
-  }
-}
-
-function exportWords() {
-  const blob = new Blob([JSON.stringify(words, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'macedonian-vocab.json'; a.click();
-}
-
-function clearAll() {
-  if (!confirm('Delete all words? This cannot be undone.')) return;
-  words = []; learned = new Set(); dailyWords = []; dailyDone = new Set();
-  save(); saveLearned(); saveDaily(); refresh();
-}
-
-function loadDemo() {
-  const demo = [
-    {mk:'куче',en:'dog',cat:'Animals'},{mk:'мачка',en:'cat',cat:'Animals'},{mk:'птица',en:'bird',cat:'Animals'},{mk:'риба',en:'fish',cat:'Animals'},
-    {mk:'леб',en:'bread',cat:'Food'},{mk:'вода',en:'water',cat:'Food'},{mk:'млеко',en:'milk',cat:'Food'},{mk:'јаболко',en:'apple',cat:'Food'},
-    {mk:'мајка',en:'mother',cat:'Family'},{mk:'татко',en:'father',cat:'Family'},{mk:'брат',en:'brother',cat:'Family'},{mk:'сестра',en:'sister',cat:'Family'},
-    {mk:'куќа',en:'house',cat:'Home'},{mk:'врата',en:'door',cat:'Home'},{mk:'маса',en:'table',cat:'Home'},{mk:'стол',en:'chair',cat:'Home'},
-    {mk:'убав',en:'beautiful',cat:'Adjectives'},{mk:'голем',en:'big',cat:'Adjectives'},{mk:'мал',en:'small',cat:'Adjectives'},{mk:'нов',en:'new',cat:'Adjectives'},
-    {mk:'одам',en:'to go',cat:'Verbs'},{mk:'јадам',en:'to eat',cat:'Verbs'},{mk:'читам',en:'to read',cat:'Verbs'},{mk:'зборувам',en:'to speak',cat:'Verbs'},
-    {mk:'понеделник',en:'Monday',cat:'Days & Time'},{mk:'вторник',en:'Tuesday',cat:'Days & Time'},{mk:'среда',en:'Wednesday',cat:'Days & Time'},
-    {mk:'зима',en:'winter',cat:'Months & Seasons'},{mk:'пролет',en:'spring',cat:'Months & Seasons'},{mk:'лето',en:'summer',cat:'Months & Seasons'}
-  ];
-  let added = 0;
-  for (const w of demo) { if (!words.find(x => x.mk === w.mk)) { words.push(w); added++; } }
-  save(); dailyWords = []; saveDaily(); refresh();
-  document.getElementById('import-log').innerHTML = `<div class="log-line ok">✓ Loaded ${added} demo words.</div>`;
-}
-
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('s-' + id).classList.add('active');
-  const idx = ['home','daily','flashcards','library','import'].indexOf(id);
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  const idx=['home','daily','cards','library'].indexOf(id);
   document.querySelectorAll('nav button')[idx].classList.add('active');
-  if (id === 'flashcards') { renderFcChips(); buildDeck(); showCard(); }
-  if (id === 'library') renderLibrary();
-  if (id === 'home') { renderHome(); updateStats(); }
-  if (id === 'daily') renderDaily();
+  if(id==='cards'){ renderChips(); buildDeck(); showCard(); }
+  if(id==='library') renderLib();
+  if(id==='home'){ renderHome(); updateStats(); }
+  if(id==='daily') renderDaily();
 }
 
-function esc(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function esc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,\"\\'\"); }
 
-load();
+loadStorage();
+refresh();
 </script>
 </body>
 </html>
