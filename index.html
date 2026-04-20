@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Македонски — Vocab Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@400;500&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0e0e0f;--surface:#18181b;--surface2:#222226;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#f0ede8;--text2:#9e9a94;--text3:#5c5956;--accent:#d4a853;--accent2:#8fb87a;--accent3:#7eb5d4;--red:#c96b5a;--radius:10px;--radius-lg:16px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -62,16 +62,16 @@ nav button:hover:not(.active){color:var(--text)}
 
 /* Flashcard */
 .fc-outer{perspective:1000px;margin:1.5rem 0}
-.fc-inner{position:relative;min-height:240px;transform-style:preserve-3d;transition:transform 0.45s ease;cursor:pointer}
+.fc-inner{position:relative;min-height:260px;transform-style:preserve-3d;transition:transform 0.45s ease;cursor:pointer}
 .fc-inner.flipped{transform:rotateY(180deg)}
 .fc-face{position:absolute;inset:0;backface-visibility:hidden;background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
 .fc-back{transform:rotateY(180deg);border-color:rgba(212,168,83,0.25)}
 .fc-label{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:14px}
-.fc-word{font-size:2rem;font-weight:300;letter-spacing:-0.01em;color:var(--text);margin-bottom:4px}
+.fc-word{font-size:2.2rem;font-weight:300;letter-spacing:-0.01em;color:var(--text);margin-bottom:4px;font-family:'Spectral',Georgia,serif}
 .fc-sub{font-size:13px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.05em;margin-bottom:4px}
 .fc-hint{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.08em;margin-top:12px}
-.fc-answer{font-size:2rem;font-weight:300;color:var(--accent);margin-bottom:4px;font-style:italic}
-.fc-answer-lat{font-size:13px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;margin-bottom:4px}
+.fc-answer{font-size:2.6rem;font-weight:400;color:var(--accent);margin-bottom:10px;font-family:'Noto Serif',serif;line-height:1.3;letter-spacing:0.01em}
+.fc-answer-lat{font-size:14px;color:var(--text2);font-family:'DM Mono',monospace;letter-spacing:0.08em;margin-bottom:8px;font-style:normal}
 .fc-cat-lbl{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);letter-spacing:0.1em}
 .fc-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:4px}
 .fc-counter{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);min-width:60px;text-align:center}
@@ -231,6 +231,7 @@ select option{background:var(--surface2)}
             <div class="fc-face fc-back">
               <div class="fc-label">macedonian</div>
               <div class="fc-answer" id="dfc-answer"></div>
+              <div style="width:32px;height:0.5px;background:rgba(212,168,83,0.3);margin:6px auto 10px;"></div>
               <div class="fc-answer-lat" id="dfc-lat"></div>
               <div class="fc-cat-lbl" id="dfc-cat"></div>
             </div>
@@ -290,6 +291,7 @@ select option{background:var(--surface2)}
         <div class="fc-face fc-back">
           <div class="fc-label">macedonian</div>
           <div class="fc-answer" id="fc-answer"></div>
+          <div style="width:32px;height:0.5px;background:rgba(212,168,83,0.3);margin:6px auto 10px;"></div>
           <div class="fc-answer-lat" id="fc-answer-lat"></div>
           <div class="fc-cat-lbl" id="fc-cat-lbl"></div>
         </div>
